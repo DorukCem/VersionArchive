@@ -1,9 +1,9 @@
 from .database import Base
-from sqlalchemy import Boolean, Column, Integer, String, ForeignKey, BLOB
+from sqlalchemy import Boolean, Column, Integer, String, ForeignKey, BLOB, BigInteger
 from sqlalchemy.orm import relationship
 
 class Object(Base):
    __tablename__ = "objects"
-   oid = Column(Integer, primary_key=True)
+   oid = Column(String, primary_key=True)
    name = Column(String)
    blob = Column(BLOB)

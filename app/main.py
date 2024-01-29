@@ -3,6 +3,7 @@ from typing import List
 from .database import engine
 from sqlalchemy.orm import Session
 from . import models, database
+import hashlib
 
 app = FastAPI()
 
@@ -17,14 +18,14 @@ def upload(files: List[UploadFile] = File(..., description= "Upload your files")
    try:
       for file in files:
          contents = file.file.read()
-         obj_oid = hash(contents) #! Change this to a better hash function maybe
-         new_object = models.Object(name=file.filename, blob=contents, oid= obj_oid)
+         obj_oid = hashlib.sha1(contents).hexdigest()
+         new_object = models.Object(name=file.filename, blob=contents, oid= str(obj_oid) )
          db.add(new_object)
       db.commit()
 
    except Exception as e:
       db.rollback
-      return {"message": "There was an error uploading the file(s): {e}"}
+      return {"message": f"There was an error uploading the file(s): {e}"}
    finally:
       db.close()
 
