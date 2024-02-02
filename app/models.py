@@ -8,17 +8,20 @@ class Object(Base):
    name = Column(String)
    blob = Column(BLOB)
 
-   commits = relationship("Commit", secondary="commit_object_association")
-
+# ! Currently commits do not need to change anything
 class Commit(Base):
    __tablename__ = "commits"
-   oid = Column(String, primary_key= True)
+   id = Column(Integer, primary_key= True, autoincrement= True)
    commit_message = Column(String)
-   parent = Column(String, nullable= True)
+   parent_oid = Column(String, nullable= True)
 
    objects = relationship("Object", secondary="commit_object_association")
 
 class CommitObjectAssociation(Base):
    __tablename__ = 'commit_object_association'
-   commit_oid = Column(String, ForeignKey('commits.oid'), primary_key=True)
+   commit_id = Column(String, ForeignKey('commits.id'), primary_key=True)
    object_oid = Column(String, ForeignKey('objects.oid'), primary_key=True)
+
+class TrackedObjects(Base):
+   __tablename__ = "tracked_objects"
+   filename = Column(String, primary_key=True)

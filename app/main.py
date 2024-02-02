@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, File, Depends, HTTPException, status
+from fastapi import FastAPI, UploadFile, File, Depends, HTTPException, status, Form
 from typing import List
 from .database import engine
 from sqlalchemy.orm import Session
@@ -14,27 +14,30 @@ def index():
    return {"Hello World"}
 
 @app.post("/upload", status_code=status.HTTP_201_CREATED)
-def upload(files: List[UploadFile] = File(..., description= "Upload your files"), db: Session = Depends(database.get_db)):
-   """
-      Uploads all given files. Skips files that are already in the db. 
-   """
-   try:
-      commit_message = "Hardcoded commit message"
-      commit_oid = "hardcode 123"
-      new_commit = models.Commit(commit_message=commit_message, oid = commit_oid, parent = None)
+def upload(files: List[UploadFile] = File(..., description= "Upload your files"),
+           commit_message: str = Form(..., description="Commit message"),
+           db: Session = Depends(database.get_db)):
+   try: 
+      new_commit = models.Commit(commit_message=commit_message, parent_oid = None)
 
       for file in files:
          contents = file.file.read()
-         # ! Check if contents are null
+         
+         tracked_file_name = db.query(models.TrackedObjects).filter_by(filename=file.filename).first()
+         if not tracked_file_name:
+            tracked_file_name = models.TrackedObjects(filename=file.filename)
+            db.add(tracked_file_name)
+         
+         if not contents: # ? We can skip empty files 
+            continue
          obj_oid = hashlib.sha1(contents).hexdigest()
 
-         existing_object = db.query(models.Object).filter_by(oid=obj_oid).first()
-         if existing_object:
-            continue
+         object = db.query(models.Object).filter_by(oid=obj_oid).first()
+         if object == None:
+            object = models.Object(name=file.filename, blob=contents, oid= str(obj_oid) )
 
-         new_object = models.Object(name=file.filename, blob=contents, oid= str(obj_oid) )
-         new_commit.objects.append(new_object)
-         db.add(new_object)
+         new_commit.objects.append(object)
+         db.add(object)
       
       db.add(new_commit)
       db.commit()
