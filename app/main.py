@@ -9,6 +9,22 @@ app = FastAPI()
 
 models.Base.metadata.create_all(engine)
 
+def get_or_create(session, model, **kwargs):
+   instance = session.query(model).filter_by(**kwargs).first()
+   if instance:
+      return instance
+   else:
+      instance = model(**kwargs)
+      session.add(instance)
+   
+   return instance
+
+def create_object_oid(blob):
+   return hashlib.sha1(blob).hexdigest()
+
+def create_commit_oid(objects):
+   hashlib.sha1( "".join(sorted([obj.oid for obj in objects])).encode() ).hexdigest()
+
 @app.get("/")
 def index():
    return {"Hello World"}
@@ -18,28 +34,21 @@ def upload(files: List[UploadFile] = File(..., description= "Upload your files")
            commit_message: str = Form(..., description="Commit message"),
            db: Session = Depends(database.get_db)):
    try: 
-      new_commit = models.Commit(commit_message=commit_message, parent_oid = None)
-
+      objects = []
       for file in files:
+         get_or_create(db, models.TrackedObjects, filename= file.filename)
+
          contents = file.file.read()
-         
-         tracked_file_name = db.query(models.TrackedObjects).filter_by(filename=file.filename).first()
-         if not tracked_file_name:
-            tracked_file_name = models.TrackedObjects(filename=file.filename)
-            db.add(tracked_file_name)
-         
          if not contents: # ? We can skip empty files 
             continue
-         obj_oid = hashlib.sha1(contents).hexdigest()
 
-         object = db.query(models.Object).filter_by(oid=obj_oid).first()
-         if object == None:
-            object = models.Object(name=file.filename, blob=contents, oid= str(obj_oid) )
+         obj_oid = create_object_oid(contents)
+         object = get_or_create(db, models.Object, name=file.filename, blob=contents, oid= str(obj_oid))
+         objects.append(object)
 
-         new_commit.objects.append(object)
-         db.add(object)
-      
-      db.add(new_commit)
+      commit_oid = create_commit_oid(objects)
+      get_or_create(models.Commit(oid = commit_oid ,commit_message=commit_message, parent_oid = None))
+
       db.commit()
 
    except Exception as e:
