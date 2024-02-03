@@ -7,6 +7,9 @@ from . import models, database
 import hashlib
 
 # * We are currently ignoring folders and only taking in files
+# TODO add all previous files to commit
+# TODO remove tracked files
+# TODO checkout cwd (get all files from HEAD commit)
 
 app = FastAPI()
 
@@ -39,6 +42,18 @@ def create_object_oid(blob):
 def create_commit_oid(objects):
    return hashlib.sha1( "".join(sorted([obj.oid for obj in objects])).encode() ).hexdigest()
 
+def merge_old_and_new_objects(old_objects : List[models.Object], new_objects : List[models.Object]):
+   """
+      Merge old objects and new objects by object.name
+      if a file with the same name is in both lists, take the newer one
+   """
+   name_to_object = {obj.name : obj for obj in old_objects}
+   for obj in new_objects:
+      name_to_object[obj.name] = obj
+
+   return list(name_to_object.values())
+
+
 @app.get("/")
 def index():
    return {"Hello World"}
@@ -48,7 +63,7 @@ def upload(files: List[UploadFile] = File(..., description= "Upload your files")
            commit_message: str = Form(..., description="Commit message"),
            db: Session = Depends(database.get_db)):
    try: 
-      objects = []
+      new_objects = []
       for file in files:
          get_or_create(db, models.TrackedObjects, filename= file.filename)
 
@@ -58,14 +73,20 @@ def upload(files: List[UploadFile] = File(..., description= "Upload your files")
 
          obj_oid = create_object_oid(contents)
          object = get_or_create(db, models.Object, name=file.filename, blob=contents, oid= str(obj_oid))
-         objects.append(object)
-
-      commit_oid = create_commit_oid(objects)
-      # ! Hard coded repo_id
+         new_objects.append(object)
+      
       repository = db.query(models.Repository).filter_by(id=1).first()
       head_oid = repository.head_oid if repository else None
+      old_objects =  db.query(models.Commit).filter_by(oid=head_oid).first().objects if head_oid else []
+      
+      merged_objects = merge_old_and_new_objects(old_objects, new_objects)
+
+      commit_oid = create_commit_oid(merged_objects)
+      # ! Hard coded repo_id
       commit = get_or_create(db, models.Commit, oid = commit_oid, 
                     commit_message=commit_message, parent_oid = head_oid, repository_id = 1)
+      for obj in merged_objects:
+         commit.objects.append(obj)
       repository.head_oid = commit.oid
 
       db.commit()
