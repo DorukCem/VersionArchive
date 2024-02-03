@@ -2,13 +2,17 @@ from fastapi import FastAPI, UploadFile, File, Depends, HTTPException, status, F
 from typing import List
 from .database import engine
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 from . import models, database
 import hashlib
+
+# * We are currently ignoring folders and only taking in files
 
 app = FastAPI()
 
 models.Base.metadata.create_all(engine)
 
+# Warning: does not commit
 def get_or_create(session, model, **kwargs):
    instance = session.query(model).filter_by(**kwargs).first()
    if instance:
@@ -19,11 +23,21 @@ def get_or_create(session, model, **kwargs):
    
    return instance
 
+def create_or_error(session, model, **kwargs):
+   try:
+      instance = model(**kwargs)
+      session.add(instance)
+      session.commit()
+      return instance
+   except IntegrityError:
+      session.rollback()
+      raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Non-unique entry")
+
 def create_object_oid(blob):
    return hashlib.sha1(blob).hexdigest()
 
 def create_commit_oid(objects):
-   hashlib.sha1( "".join(sorted([obj.oid for obj in objects])).encode() ).hexdigest()
+   return hashlib.sha1( "".join(sorted([obj.oid for obj in objects])).encode() ).hexdigest()
 
 @app.get("/")
 def index():
@@ -47,7 +61,12 @@ def upload(files: List[UploadFile] = File(..., description= "Upload your files")
          objects.append(object)
 
       commit_oid = create_commit_oid(objects)
-      get_or_create(models.Commit(oid = commit_oid ,commit_message=commit_message, parent_oid = None))
+      # ! Hard coded repo_id
+      repository = db.query(models.Repository).filter_by(id=1).first()
+      head_oid = repository.head_oid if repository else None
+      commit = get_or_create(db, models.Commit, oid = commit_oid, 
+                    commit_message=commit_message, parent_oid = head_oid, repository_id = 1)
+      repository.head_oid = commit.oid
 
       db.commit()
 
@@ -72,3 +91,11 @@ def read_file(obj_oid : str, db: Session = Depends(database.get_db)):
    # The returned content has special chars such as \n and \r
 
 # TODO some sort of error message on commits
+
+@app.post("/create_repo", status_code=status.HTTP_201_CREATED)
+def create_repo(repo_name : str, db: Session = Depends(database.get_db)):
+   try:
+      create_or_error(db, models.Repository, name= repo_name)
+      return {"message" : f"succesfully created repository: {repo_name}"}
+   except Exception as e:
+      raise e
