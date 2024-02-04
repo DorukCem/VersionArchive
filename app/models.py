@@ -24,10 +24,6 @@ class CommitObjectAssociation(Base):
    commit_oid = Column(String, ForeignKey('commits.oid'), primary_key=True)
    object_oid = Column(String, ForeignKey('objects.oid'), primary_key=True)
 
-# TODO lets just look at the files of the previous commit instead
-class TrackedObjects(Base):
-   __tablename__ = "tracked_objects"
-   filename = Column(String, primary_key=True)
 
 class Repository(Base):
    __tablename__ = "repositories"

@@ -7,9 +7,6 @@ from . import models, database
 import hashlib
 
 # * We are currently ignoring folders and only taking in files
-# TODO add all previous files to commit
-# TODO remove tracked files
-# TODO checkout cwd (get all files from HEAD commit)
 
 app = FastAPI()
 
@@ -65,8 +62,6 @@ def upload(files: List[UploadFile] = File(..., description= "Upload your files")
    try: 
       new_objects = []
       for file in files:
-         get_or_create(db, models.TrackedObjects, filename= file.filename)
-
          contents = file.file.read()
          if not contents: # ? We can skip empty files 
             continue
@@ -111,7 +106,13 @@ def read_file(obj_oid : str, db: Session = Depends(database.get_db)):
    return {"content": contents}
    # The returned content has special chars such as \n and \r
 
-# TODO some sort of error message on commits
+# TODO error checking
+@app.get("/working_directory")
+def get_working_directory(repo_id : int, db: Session = Depends(database.get_db)):
+   repo_head = db.query(models.Repository).filter_by(id= repo_id).first().head_oid
+   head_commit = db.query(models.Commit).filter_by(oid= repo_head).first() if repo_head else []
+   return [obj.oid for obj in head_commit.objects]
+   
 
 @app.post("/create_repo", status_code=status.HTTP_201_CREATED)
 def create_repo(repo_name : str, db: Session = Depends(database.get_db)):
