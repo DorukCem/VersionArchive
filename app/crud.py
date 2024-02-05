@@ -21,3 +21,6 @@ def create_or_error(session, model, **kwargs):
    except IntegrityError:
       session.rollback()
       raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Non-unique entry")
+   
+def get_one(session, model, **kwargs):
+   return session.query(model).filter_by(**kwargs).first()

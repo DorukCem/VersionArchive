@@ -46,4 +46,18 @@ def commit_files(files: List[UploadFile] = File(..., description= "Upload your f
 
 @router.get("/{commit_oid}/objects", status_code=status.HTTP_200_OK)
 def get_all_objects_for_commit(commit_oid : str, db: Session = Depends(database.get_db)):
-   pass
+   commit = crud.get_one(db, models.Commit, oid= commit_oid)
+   return [obj.oid for obj in commit.objects]
+
+@router.get("/all/{repository_id}")
+def log_all_commits_in_repo( repository_id : str, db: Session = Depends(database.get_db)):
+   repo = crud.get_one(db, models.Repository, id= repository_id)
+   repo_head = repo.head_oid
+   commit = crud.get_one(db, models.Commit, oid= repo_head)
+   commits = []
+   while commit:
+      commits.append(commit.oid)
+      parent_oid = commit.parent_oid
+      commit = crud.get_one(db, models.Commit, oid= parent_oid)
+
+   return commits
