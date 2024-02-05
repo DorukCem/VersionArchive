@@ -16,3 +16,11 @@ def fetch_object_content(object_oid : str, db: Session = Depends(database.get_db
    
    return {"content": contents}
    # The returned content has special chars such as \n and \r
+
+
+# TODO error checking
+@router.get("/all/{repo_id}")
+def get_all_for_repository(repo_id : int, db: Session = Depends(database.get_db)):
+   repo_head = db.query(models.Repository).filter_by(id= repo_id).first().head_oid
+   head_commit = db.query(models.Commit).filter_by(oid= repo_head).first() if repo_head else []
+   return [obj.oid for obj in head_commit.objects]

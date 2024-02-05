@@ -43,3 +43,7 @@ def commit_files(files: List[UploadFile] = File(..., description= "Upload your f
       db.close()
 
    return {"message": f"Successfuly uploaded {[file.filename for file in files]}"}
+
+@router.get("/{commit_oid}/objects", status_code=status.HTTP_200_OK)
+def get_all_objects_for_commit(commit_oid : str, db: Session = Depends(database.get_db)):
+   pass
