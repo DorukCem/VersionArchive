@@ -49,15 +49,17 @@ def get_all_objects_for_commit(commit_oid : str, db: Session = Depends(database.
    commit = crud.get_one(db, models.Commit, oid= commit_oid)
    return [obj.oid for obj in commit.objects]
 
-@router.get("/all/{repository_id}")
-def log_all_commits_in_repo( repository_id : str, db: Session = Depends(database.get_db)):
+@router.get("/log/{repository_id}")
+def log_commits_in_repo( repository_id : str, db: Session = Depends(database.get_db)):
    repo = crud.get_one(db, models.Repository, id= repository_id)
    repo_head = repo.head_oid
    commit = crud.get_one(db, models.Commit, oid= repo_head)
    commits = []
-   while commit:
+   log_depth = 10
+   while (commit and log_depth):
       commits.append(commit.oid)
       parent_oid = commit.parent_oid
       commit = crud.get_one(db, models.Commit, oid= parent_oid)
+      log_depth -= 1
 
    return commits

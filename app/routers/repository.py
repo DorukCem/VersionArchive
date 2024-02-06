@@ -8,7 +8,10 @@ router = APIRouter(prefix= "/repository", tags=["repository"])
 @router.post("/", status_code=status.HTTP_201_CREATED)
 def create_repo(repo_name : str, db: Session = Depends(database.get_db)):
    try:
-      crud.create_or_error(db, models.Repository, name= repo_name)
+      repo = crud.create_or_error(db, models.Repository, name= repo_name)
+      #! hardcoded head_commit
+      master = crud.create_or_error(db, models.Branch, name= "master", head_commit_oid = 0, repository_id= repo.id)
+      repo.branches.append(master)
       return {"message" : f"succesfully created repository: {repo_name}"}
    except Exception as e:
       raise e

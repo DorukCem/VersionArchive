@@ -4,9 +4,10 @@ from . import models
 from .routers import repository, objects, commits
 
 # * We are currently ignoring folders and only taking in files
-# TODO log commits
+# TODO get all commits of repo without logging
 # TODO branch
 # TODO move head
+# TODO proper routing
 
 app = FastAPI()
 
