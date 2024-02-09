@@ -33,10 +33,11 @@ def commit_files(files: List[UploadFile] = File(..., description= "Upload your f
     
       for obj in merged_objects:
          commit.objects.append(obj)
-
+      
+      # Move branch
       repository.head_oid = commit.oid
-      if repository.current_branch_id:
-         branch = crud.get_one(db, models.Branch, id= repository.current_branch_id)
+      if repository.current_branch:
+         branch= repository.current_branch
          branch.head_commit_oid = commit.oid
 
       db.commit()

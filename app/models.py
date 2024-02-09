@@ -40,7 +40,9 @@ class Repository(Base):
    id = Column(Integer, primary_key=True, autoincrement= True)
    name = Column(String, unique= True)
    head_oid = Column(String, nullable= True, default= None)
-   current_branch_id = Column(Integer, nullable=True)
+   
+   current_branch_id = Column(Integer, ForeignKey("branches.id"), nullable=True)
+   current_branch = relationship("Branch", uselist=False, foreign_keys=[current_branch_id])
 
    commits = relationship("Commit", back_populates="repository")
-   branches = relationship("Branch", back_populates="repository")
+   branches = relationship("Branch", back_populates="repository", foreign_keys="Branch.repository_id")
