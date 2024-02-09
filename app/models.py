@@ -38,7 +38,7 @@ class Branch(Base):
 class Repository(Base):
    __tablename__ = "repositories"
    id = Column(Integer, primary_key=True, autoincrement= True)
-   name = Column(String, unique= True)
+   name = Column(String, unique= True) # Shoould be only unique per user
    head_oid = Column(String, nullable= True, default= None)
    
    current_branch_id = Column(Integer, ForeignKey("branches.id"), nullable=True)

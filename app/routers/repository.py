@@ -2,6 +2,9 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from .. import database, models, crud
 from sqlalchemy.orm import Session
 from typing import List, Optional
+import networkx as nx
+from networkx.readwrite import json_graph
+import matplotlib.pyplot as plt
 
 router = APIRouter(prefix= "/repository", tags=["repository"])
 
@@ -9,8 +12,7 @@ router = APIRouter(prefix= "/repository", tags=["repository"])
 def create_repo(repo_name : str, db: Session = Depends(database.get_db)):
    try:
       repo = crud.create_or_error(db, models.Repository, name= repo_name)
-      #! hardcoded head_commit
-      master_branch = crud.create_or_error(db, models.Branch, name= "master", head_commit_oid = 0, repository_id= repo.id)
+      master_branch = crud.create_or_error(db, models.Branch, name= "master", head_commit_oid = None, repository_id= repo.id)
       repo.branches.append(master_branch)
       repo.current_branch_id = master_branch.id
       db.commit()
@@ -18,10 +20,36 @@ def create_repo(repo_name : str, db: Session = Depends(database.get_db)):
    except Exception as e:
       raise e
    
-@router.put("/{repo_id}/change-branch", status_code=status.HTTP_200_OK)
-def change_branch(repo_id: int, branch_name: str, db: Session = Depends(database.get_db)):
-   repo = crud.get_one(db, models.Repository, id= repo_id)
+@router.put("/{repository_name}/change-branch", status_code=status.HTTP_200_OK)
+def change_branch(repository_name: str, branch_name: str, db: Session = Depends(database.get_db)):
+   repo = crud.get_one(db, models.Repository, name= repository_name) #! This by itself will not be enough when different users are implemented
    branch = crud.get_one(db, models.Branch, name= branch_name)
    repo.current_branch = branch
    db.commit()
    return {"message" : f"succesfully changed branch to {branch_name} in repository {repo.name}"}
+
+@router.get("/{repository_name}/tree", status_code=status.HTTP_200_OK)
+def get_tree_for_repo(repository_name: str, db: Session = Depends(database.get_db)):
+   repo = crud.get_one(db, models.Repository, name= repository_name) 
+   
+   # Create an empty directed graph
+   graph = nx.DiGraph()
+
+   for branch in repo.branches:
+      head = branch.head_commit_oid
+      commit = crud.get_one(db, models.Commit, oid=head)
+
+      while commit:
+         graph.add_node(commit.oid, label=f"Commit: {commit.oid}\nMessage: {commit.commit_message}")
+
+         if commit.parent_oid:
+            graph.add_edge(commit.parent_oid, commit.oid)
+
+         commit = crud.get_one(db, models.Commit, oid=commit.parent_oid)
+
+   # # Draw the graph
+   # pos = nx.spring_layout(graph)
+   # nx.draw(graph, pos, with_labels=True, node_color="lightblue", node_size=1500, font_size=10, font_weight="bold")
+   # plt.show()
+
+   return json_graph.node_link_data(graph) # nx also has function tree data

@@ -5,9 +5,9 @@ from .routers import repository, objects, commits, branch
 
 # * We are currently ignoring folders and only taking in files
 
-# TODO branch
-
 # TODO proper routing
+# TODO fix hardcoded stuff
+# TODO improve api endpoints
 
 app = FastAPI()
 
