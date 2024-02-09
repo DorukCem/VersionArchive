@@ -17,3 +17,11 @@ def create_repo(repo_name : str, db: Session = Depends(database.get_db)):
       return {"message" : f"succesfully created repository: {repo_name}"}
    except Exception as e:
       raise e
+   
+@router.put("/{repo_id}/change-branch", status_code=status.HTTP_200_OK)
+def change_branch(repo_id: int, branch_name: str, db: Session = Depends(database.get_db)):
+   repo = crud.get_one(db, models.Repository, id= repo_id)
+   branch = crud.get_one(db, models.Branch, name= branch_name)
+   repo.current_branch = branch
+   db.commit()
+   return {"message" : f"succesfully changed branch to {branch_name} in repository {repo.name}"}

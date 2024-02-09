@@ -24,3 +24,11 @@ def create_or_error(session, model, **kwargs):
    
 def get_one(session, model, **kwargs):
    return session.query(model).filter_by(**kwargs).first()
+
+def get_many(session, model, skip= 0, limit= 100, **kwargs):
+   return session.query(model).filter_by(**kwargs).offset(skip).limit(limit).all()
+
+def delete(session, db_object):
+   session.delete(db_object)
+   session.commit()
+   return db_object
