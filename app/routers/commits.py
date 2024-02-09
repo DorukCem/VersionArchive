@@ -25,14 +25,19 @@ def commit_files(files: List[UploadFile] = File(..., description= "Upload your f
       old_objects =  db.query(models.Commit).filter_by(oid=head_oid).first().objects if head_oid else []
       
       merged_objects = utils.merge_old_and_new_objects(old_objects, new_objects)
-
       commit_oid = utils.create_commit_oid(merged_objects)
+      
       # ! Hard coded repo_id
       commit = crud.get_or_create(db, models.Commit, oid = commit_oid, 
                     commit_message=commit_message, parent_oid = head_oid, repository_id = 1)
+    
       for obj in merged_objects:
          commit.objects.append(obj)
+
       repository.head_oid = commit.oid
+      if repository.current_branch_id:
+         branch = crud.get_one(db, models.Branch, id= repository.current_branch_id)
+         branch.head_commit_oid = commit.oid
 
       db.commit()
 
