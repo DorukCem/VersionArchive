@@ -38,18 +38,15 @@ def get_tree_for_repo(repository_name: str, db: Session = Depends(database.get_d
    for branch in repo.branches:
       head = branch.head_commit_oid
       commit = crud.get_one(db, models.Commit, oid=head)
-
       while commit:
-         graph.add_node(commit.oid, label=f"Commit: {commit.oid}\nMessage: {commit.commit_message}")
+         graph.add_node(commit.oid, label=f"Commit: {commit.commit_message}")
 
          if commit.parent_oid:
             graph.add_edge(commit.parent_oid, commit.oid)
+         else:
+            root = commit.oid
 
          commit = crud.get_one(db, models.Commit, oid=commit.parent_oid)
 
-   # # Draw the graph
-   # pos = nx.spring_layout(graph)
-   # nx.draw(graph, pos, with_labels=True, node_color="lightblue", node_size=1500, font_size=10, font_weight="bold")
-   # plt.show()
 
-   return json_graph.node_link_data(graph) # nx also has function tree data
+   return json_graph.tree_data(graph, root) # ? I dont know if this is better or the other
