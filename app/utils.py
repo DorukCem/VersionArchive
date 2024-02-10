@@ -1,6 +1,7 @@
 import hashlib
 from typing import List
 from . import models
+import difflib
 
 def create_object_oid(blob):
    return hashlib.sha1(blob).hexdigest()
@@ -18,3 +19,19 @@ def merge_old_and_new_objects(old_objects : List[models.Object], new_objects : L
       name_to_object[obj.name] = obj
 
    return list(name_to_object.values())
+
+
+def diff_blobs(content_from, content_to):
+   # Split the content into lines for diff comparison
+   lines_from = content_from.decode("utf-8").splitlines()
+   lines_to = content_to.decode("utf-8").splitlines()
+
+   # Compute the difference between the contents using unified_diff
+   diff = difflib.unified_diff(lines_from, lines_to)
+   # Skip over the header in the diff
+   for i,_ in enumerate(diff):
+      if i == 2:
+         break
+
+   # Join the diff lines into a single string
+   return '\n'.join(diff).encode("utf-8")

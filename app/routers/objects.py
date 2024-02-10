@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from .. import database, models
+from .. import database, models, crud, utils
 from sqlalchemy.orm import Session
 from typing import List, Optional
 
@@ -24,3 +24,12 @@ def get_all_for_repository(repo_id : int, db: Session = Depends(database.get_db)
    repo_head = db.query(models.Repository).filter_by(id= repo_id).first().head_oid
    head_commit = db.query(models.Commit).filter_by(oid= repo_head).first() if repo_head else []
    return [obj.oid for obj in head_commit.objects]
+
+@router.get("/diff/")
+def get_diff_of_objects(obj_oid_1: str, obj_oid_2: str, db: Session = Depends(database.get_db)):
+   obj1 = crud.get_one(db, models.Object, oid= obj_oid_1)
+   obj2 = crud.get_one(db, models.Object, oid= obj_oid_2)
+
+   diff = utils.diff_blobs(obj1.blob, obj2.blob)
+
+   return {"diff": diff}
