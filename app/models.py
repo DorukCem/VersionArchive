@@ -38,11 +38,23 @@ class Branch(Base):
 class Repository(Base):
    __tablename__ = "repositories"
    id = Column(Integer, primary_key=True, autoincrement= True)
-   name = Column(String, unique= True) # Should be only unique per user
+   name = Column(String, unique= True) # ! Should be only unique per user
    head_oid = Column(String, nullable= True, default= None)
    
    current_branch_id = Column(Integer, ForeignKey("branches.id"), nullable=True)
    current_branch = relationship("Branch", uselist=False, foreign_keys=[current_branch_id])
 
+   creator_id = Column(Integer, ForeignKey('users.id'), nullable= False)
+   creator = relationship("User", back_populates="repositories")
+
    commits = relationship("Commit", back_populates="repository")
    branches = relationship("Branch", back_populates="repository", foreign_keys="Branch.repository_id")
+
+class User(Base):
+   __tablename__ = "users"
+
+   id = Column(Integer, primary_key=True, index=True)
+   name = Column(String, unique= True)
+   password = Column(String)
+
+   repositories = relationship("Repository", back_populates="creator")

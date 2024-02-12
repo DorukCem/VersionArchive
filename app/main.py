@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from .database import engine
 from . import models
-from .routers import repository, objects, commits, branch
+from .routers import repository, objects, commits, branch, authentication, users
 
 # * We are currently ignoring folders and only taking in files
 
@@ -18,6 +18,8 @@ app.include_router(objects.router)
 app.include_router(repository.router)
 app.include_router(commits.router)
 app.include_router(branch.router)
+app.include_router(authentication.router)
+app.include_router(users.router)
 
 @app.get("/")
 def index():

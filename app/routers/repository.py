@@ -1,11 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from .. import database, models, crud
+from .. import database, models, crud, oauth2
 from sqlalchemy.orm import Session
 from typing import List, Optional
 import networkx as nx
 from networkx.readwrite import json_graph
 
-router = APIRouter(prefix= "/repository", tags=["repository"])
+router = APIRouter(prefix= "/repository", tags=["repository"], dependencies= [Depends(oauth2.get_current_user)])
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
 def create_repo(repo_name : str, db: Session = Depends(database.get_db)):
