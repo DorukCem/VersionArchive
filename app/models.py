@@ -1,5 +1,5 @@
 from .database import Base
-from sqlalchemy import Boolean, Column, Integer, String, ForeignKey, BLOB, Enum
+from sqlalchemy import Boolean, Column, Integer, String, ForeignKey, BLOB, Enum, UniqueConstraint
 from sqlalchemy.orm import relationship
 
 class Object(Base):
@@ -27,18 +27,22 @@ class CommitObjectAssociation(Base):
 class Branch(Base):
    __tablename__ = "branches"
    id = Column(Integer, primary_key=True, autoincrement=True)
-   name = Column(String, unique=True)
+   name = Column(String)
    
    head_commit_oid = Column(String, ForeignKey("commits.oid"))
    
    repository_id = Column(Integer, ForeignKey("repositories.id"))
    repository = relationship("Repository", back_populates="branches", foreign_keys=[repository_id])
 
+   __table_args__ = (
+      UniqueConstraint('name', 'repository_id', name='unique_branch_per_repo'),
+   )
+
 
 class Repository(Base):
    __tablename__ = "repositories"
    id = Column(Integer, primary_key=True, autoincrement= True)
-   name = Column(String, unique= True) # ! Should be only unique per user
+   name = Column(String)
    head_oid = Column(String, nullable= True, default= None)
    
    current_branch_id = Column(Integer, ForeignKey("branches.id"), nullable=True)
@@ -49,6 +53,10 @@ class Repository(Base):
 
    commits = relationship("Commit", back_populates="repository")
    branches = relationship("Branch", back_populates="repository", foreign_keys="Branch.repository_id")
+
+   __table_args__ = (
+      UniqueConstraint('name', 'creator_id', name='unique_repo_per_user'),
+   )
 
 class User(Base):
    __tablename__ = "users"

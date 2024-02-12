@@ -5,12 +5,13 @@ from typing import List, Optional
 import networkx as nx
 from networkx.readwrite import json_graph
 
-router = APIRouter(prefix= "/repository", tags=["repository"], dependencies= [Depends(oauth2.get_current_user)])
+router = APIRouter(prefix= "/{user_name}", tags=["repository"], dependencies= [Depends(oauth2.get_current_user)])
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
-def create_repo(repo_name : str, db: Session = Depends(database.get_db)):
+def create_repo(user_name: str, repo_name : str, db: Session = Depends(database.get_db)):
    try:
-      repo = crud.create_or_error(db, models.Repository, name= repo_name)
+      user = crud.get_one(db, models.User, name= user_name)
+      repo = crud.create_or_error(db, models.Repository, name= repo_name, creator= user)
       master_branch = crud.create_or_error(db, models.Branch, name= "master", head_commit_oid = None, repository_id= repo.id)
       repo.branches.append(master_branch)
       repo.current_branch_id = master_branch.id
@@ -20,16 +21,18 @@ def create_repo(repo_name : str, db: Session = Depends(database.get_db)):
       raise e
    
 @router.put("/{repository_name}/change-branch", status_code=status.HTTP_200_OK)
-def change_branch(repository_name: str, branch_name: str, db: Session = Depends(database.get_db)):
-   repo = crud.get_one(db, models.Repository, name= repository_name) #! This by itself will not be enough when different users are implemented
-   branch = crud.get_one(db, models.Branch, name= branch_name)
+def change_branch(user_name: str, repository_name: str, branch_name: str, db: Session = Depends(database.get_db)):
+   user = crud.get_one(db, models.User, name= user_name)
+   repo = crud.get_one(db, models.Repository, name= repository_name, creator= user) 
+   branch = crud.get_one(db, models.Branch, name= branch_name, repository_id= repo.id)
    repo.current_branch = branch
    db.commit()
    return {"message" : f"succesfully changed branch to {branch_name} in repository {repo.name}"}
 
 @router.get("/{repository_name}/tree", status_code=status.HTTP_200_OK)
-def get_tree_for_repo(repository_name: str, db: Session = Depends(database.get_db)):
-   repo = crud.get_one(db, models.Repository, name= repository_name) 
+def get_tree_for_repo(user_name: str, repository_name: str, db: Session = Depends(database.get_db)):
+   user = crud.get_one(db, models.User, name= user_name)
+   repo = crud.get_one(db, models.Repository, name= repository_name, creator_id= user.id) 
    
    # Create an empty directed graph
    graph = nx.DiGraph()
