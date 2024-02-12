@@ -4,7 +4,6 @@ from sqlalchemy.orm import Session
 from typing import List, Optional
 import networkx as nx
 from networkx.readwrite import json_graph
-import matplotlib.pyplot as plt
 
 router = APIRouter(prefix= "/repository", tags=["repository"])
 
@@ -44,9 +43,9 @@ def get_tree_for_repo(repository_name: str, db: Session = Depends(database.get_d
          if commit.parent_oid:
             graph.add_edge(commit.parent_oid, commit.oid)
          else:
-            root = commit.oid
+            root = commit.oid # Returnning this could be good for drawing better graphs
 
          commit = crud.get_one(db, models.Commit, oid=commit.parent_oid)
 
 
-   return json_graph.tree_data(graph, root) # ? I dont know if this is better or the other
+   return json_graph.node_link_data(graph)
