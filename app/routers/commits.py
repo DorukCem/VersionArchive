@@ -5,13 +5,14 @@ from typing import List, Optional
 
 router = APIRouter(prefix= "/commit", tags= ["commit"])
 
-@router.post("/{repository_name}", status_code=status.HTTP_201_CREATED)
-def commit_files(repository_name: str,
+@router.post("/{user_name}/{repository_name}", status_code=status.HTTP_201_CREATED)
+def commit_files(repository_name: str, user_name: str,
                  files: List[UploadFile] = File(..., description= "Upload your files"),
                  commit_message: str = Form(..., description="Commit message"),
                  db: Session = Depends(database.get_db)):
-   try: 
-      repository = crud.get_one(db, models.Repository, name= repository_name)
+   try:
+      user = crud.get_one(db, models.User, name= user_name) 
+      repository = crud.get_one(db, models.Repository, name= repository_name, creator_id= user.id)
       if not repository:
          raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Repository not found")
       

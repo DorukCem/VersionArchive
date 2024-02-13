@@ -7,9 +7,10 @@ from .routers import repository, objects, commits, branch, authentication, users
 
 # TODO proper routing
 # TODO improve api endpoints
-# TODO allow branching from previous commits
-# TODO allow reset branch to previous commit
 # TODO users should only be allowed to work on things that they own
+
+# * Features will not be added until things above are done
+# TODO allow branching from previous commits
 
 app = FastAPI()
 
