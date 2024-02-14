@@ -39,7 +39,7 @@ def get_tree_for_repo(user_name: str, repository_name: str, db: Session = Depend
 
    for branch in repo.branches:
       head = branch.head_commit_oid
-      commit = crud.get_one(db, models.Commit, oid=head)
+      commit = crud.get_one(db, models.Commit, oid=head, repository_id= repo.id)
       while commit:
          graph.add_node(commit.oid, label=f"Commit: {commit.commit_message}")
 
@@ -48,7 +48,7 @@ def get_tree_for_repo(user_name: str, repository_name: str, db: Session = Depend
          else:
             root = commit.oid # Returnning this could be good for drawing better graphs
 
-         commit = crud.get_one(db, models.Commit, oid=commit.parent_oid)
+         commit = crud.get_one(db, models.Commit, oid=commit.parent_oid, repository_id= repo.id)
 
 
    return json_graph.node_link_data(graph)

@@ -3,10 +3,10 @@ from .. import database, models, crud, utils
 from sqlalchemy.orm import Session
 from typing import List, Optional
 
-router = APIRouter(prefix= "/commit", tags= ["commit"])
+router = APIRouter(prefix= "/{user_name}/{repository_name}", tags= ["commit"])
 
-@router.post("/{user_name}/{repository_name}", status_code=status.HTTP_201_CREATED)
-def commit_files(repository_name: str, user_name: str,
+@router.post("/", status_code=status.HTTP_201_CREATED)
+def commit_files(user_name: str, repository_name: str, 
                  files: List[UploadFile] = File(..., description= "Upload your files"),
                  commit_message: str = Form(..., description="Commit message"),
                  db: Session = Depends(database.get_db)):
@@ -24,7 +24,8 @@ def commit_files(repository_name: str, user_name: str,
             continue
 
          obj_oid = utils.create_object_oid(contents)
-         object = crud.get_or_create(db, models.Object, name=file.filename, blob=contents, oid= str(obj_oid))
+         object = crud.get_or_create(db, models.Object, name=file.filename, 
+                                     blob=contents, oid= str(obj_oid), repository_id = repository.id)
          new_objects.append(object)
       
       # Create new commit object
@@ -49,6 +50,7 @@ def commit_files(repository_name: str, user_name: str,
       db.commit()
 
    except HTTPException as http_exception:
+      db.rollback()
       raise http_exception
    except Exception as e:
       db.rollback()
@@ -59,22 +61,25 @@ def commit_files(repository_name: str, user_name: str,
    return {"message": f"Successfuly uploaded {[file.filename for file in files]}"}
 
 @router.get("/{commit_oid}/objects", status_code=status.HTTP_200_OK)
-def get_all_objects_for_commit(commit_oid : str, db: Session = Depends(database.get_db)):
-   commit = crud.get_one(db, models.Commit, oid= commit_oid)
+def get_all_objects_for_commit(commit_oid : str, repository_name: str, user_name: str, 
+                               db: Session = Depends(database.get_db)):
+   user = crud.get_one(db, models.User, name= user_name) 
+   repository = crud.get_one(db, models.Repository, name= repository_name, creator_id= user.id)
+   commit = crud.get_one(db, models.Commit, oid= commit_oid, repository_id= repository.id)
    return [obj.oid for obj in commit.objects]
 
-@router.get("/{repository_name}/{branch_name}/log")
+@router.get("/{branch_name}/log")
 def log_commits_in_branch( repository_name : str, branch_name: str, log_depth : int = 10, db: Session = Depends(database.get_db)):
    repo = crud.get_one(db, models.Repository, name= repository_name)
    branch = crud.get_one(db, models.Branch, repository_id= repo.id, name= branch_name)
    head = branch.head_commit_oid
-   commit = crud.get_one(db, models.Commit, oid= head)
+   commit = crud.get_one(db, models.Commit, oid= head, repository_id= repo.id)
    commits = []
 
    while (commit and log_depth):
       commits.append(commit.oid)
       parent_oid = commit.parent_oid
-      commit = crud.get_one(db, models.Commit, oid= parent_oid)
+      commit = crud.get_one(db, models.Commit, oid= parent_oid, repository_id= repo.id)
       log_depth -= 1
 
    return commits

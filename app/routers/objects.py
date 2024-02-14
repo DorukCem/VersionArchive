@@ -3,7 +3,7 @@ from .. import database, models, crud, utils
 from sqlalchemy.orm import Session
 from typing import List, Optional
 
-router = APIRouter(prefix= "/object", tags=["object"])
+router = APIRouter(prefix= "/{user_name}/{repository_name}/object", tags=["object"])
 
 @router.get("/{object_oid}",  status_code=status.HTTP_200_OK)
 def fetch_object_content(object_oid : str, db: Session = Depends(database.get_db)):
@@ -17,12 +17,12 @@ def fetch_object_content(object_oid : str, db: Session = Depends(database.get_db
    return {"content": contents}
    # The returned content has special chars such as \n and \r
 
-
 # TODO error checking
-@router.get("/all/{repo_id}")
-def get_all_for_repository(repo_id : int, db: Session = Depends(database.get_db)):
-   repo_head = db.query(models.Repository).filter_by(id= repo_id).first().head_oid
-   head_commit = db.query(models.Commit).filter_by(oid= repo_head).first() if repo_head else []
+@router.get("/all")
+def get_all_for_repository(user_name: str, repository_name : str, db: Session = Depends(database.get_db)):
+   user = crud.get_one(db, models.User, name= user_name) 
+   repo = db.query(models.Repository).filter_by(repository_name= repository_name, creator_id= user.id).first()
+   head_commit = db.query(models.Commit).filter_by(oid= repo.head_oid).first() if repo.head_oid else []
    return [obj.oid for obj in head_commit.objects]
 
 @router.get("/diff/")

@@ -3,22 +3,46 @@ from sqlalchemy import Boolean, Column, Integer, String, ForeignKey, BLOB, Enum,
 from sqlalchemy.orm import relationship
 
 class Object(Base):
+   """
+    Represents an object in a version control system.
+
+    Attributes:
+    - id (int): The unique identifier for the object.
+    - oid (str): The SHA-1 hash of the object's contents.
+    - name (str): The name of the object.
+    - blob (bytes): The binary content of the object (e.g., file contents).
+    - repository_id (int): The foreign key reference to the repository to which the object belongs.
+   """
    __tablename__ = "objects"
-   oid = Column(String, primary_key= True)
+   id = Column(Integer, primary_key= True, autoincrement= True)
+   oid = Column(String, nullable= False) 
    name = Column(String)
    blob = Column(BLOB)
 
+   repository_id = Column(Integer, ForeignKey("repositories.id"), nullable= False)
+   repository = relationship("Repository", back_populates="objects")
+
+   __table_args__ = (
+      UniqueConstraint('oid', 'repository_id', name='unique_objects_per_repo'),
+   )
+
 class Commit(Base):
    __tablename__ = "commits"
-   oid = Column(String, primary_key= True)
+   id = Column(Integer, primary_key= True, autoincrement= True)
+   oid = Column(String, nullable= False)
    commit_message = Column(String)
    parent_oid = Column(String, nullable= True)
 
    objects = relationship("Object", secondary="commit_object_association")
 
-   repository_id = Column(Integer, ForeignKey("repositories.id"))
+   repository_id = Column(Integer, ForeignKey("repositories.id"), nullable= False)
    repository = relationship("Repository", back_populates="commits")
 
+   __table_args__ = (
+      UniqueConstraint('oid', 'repository_id', name='unique_objects_per_repo'),
+   )
+
+# Many to Many 
 class CommitObjectAssociation(Base):
    __tablename__ = 'commit_object_association'
    commit_oid = Column(String, ForeignKey('commits.oid'), primary_key=True)
@@ -51,6 +75,7 @@ class Repository(Base):
    creator_id = Column(Integer, ForeignKey('users.id'), nullable= False)
    creator = relationship("User", back_populates="repositories")
 
+   objects = relationship("Object", back_populates="repository")
    commits = relationship("Commit", back_populates="repository")
    branches = relationship("Branch", back_populates="repository", foreign_keys="Branch.repository_id")
 
