@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File, Form
-from .. import database, models, crud, utils
+from .. import database, models, crud, utils, schemas
 from sqlalchemy.orm import Session
 from typing import List, Optional
 
@@ -54,15 +54,15 @@ def commit_files(user_name: str, repository_name: str,
 
    return {"message": f"Successfuly uploaded {[file.filename for file in files]}"}
 
-@router.get("/{commit_oid}/objects", status_code=status.HTTP_200_OK)
+@router.get("/{commit_oid}/objects", response_model=List[schemas.ObjectResponseSchema], status_code=status.HTTP_200_OK)
 def get_all_objects_for_commit(commit_oid : str, repository_name: str, user_name: str, 
                                db: Session = Depends(database.get_db)):
    user = crud.get_one_or_error(db, models.User, name= user_name) 
    repository = crud.get_one_or_error(db, models.Repository, name= repository_name, creator_id= user.id)
    commit = crud.get_one_or_error(db, models.Commit, oid= commit_oid, repository_id= repository.id)
-   return [obj.oid for obj in commit.objects]
+   return commit.objects
 
-@router.get("/{branch_name}/log", status_code=status.HTTP_200_OK)
+@router.get("/{branch_name}/log", response_model=List[schemas.CommitResponseSchema], status_code=status.HTTP_200_OK)
 def log_commits_in_branch( repository_name : str, branch_name: str, log_depth : int = 10, db: Session = Depends(database.get_db)):
    repo = crud.get_one_or_error(db, models.Repository, name= repository_name)
    branch = crud.get_one_or_error(db, models.Branch, repository_id= repo.id, name= branch_name)
@@ -70,7 +70,7 @@ def log_commits_in_branch( repository_name : str, branch_name: str, log_depth : 
    commits = []
 
    while (commit and log_depth):
-      commits.append(commit.oid)
+      commits.append(commit)
       parent_oid = commit.parent_oid
       commit = crud.get_one_or_none(db, models.Commit, oid= parent_oid, repository_id= repo.id)
       log_depth -= 1

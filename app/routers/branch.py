@@ -1,21 +1,22 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from .. import database, models, crud
+from .. import database, models, crud, schemas
 from sqlalchemy.orm import Session
 from typing import List, Optional
 
 router = APIRouter(prefix= "/{user_name}/{repository_name}", tags=["branch"])
 
-@router.post("/{branch_name}", status_code=status.HTTP_201_CREATED)
+@router.post("/{branch_name}", response_model= schemas.BranchResponseSchema, status_code=status.HTTP_201_CREATED)
 def create_branch(user_name: str, repository_name : str, branch_name: str, db: Session = Depends(database.get_db)):
    user = crud.get_one_or_error(db, models.User, name= user_name) 
    repo = crud.get_one_or_error(db, models.Repository, name = repository_name, creator_id= user.id)
    branch = crud.create_unique_or_error(db, models.Branch, name= branch_name, 
                                  repository_id= repo.id, head_commit_oid= repo.head_oid)
    db.commit()
-   return {"message" : f"succesfully created branch: {branch.name} in repository: {repo.name}"}
+   return branch
    
    
-@router.put("/{branch_name}/reset/{commit_oid}")
+@router.put("/{branch_name}/reset/{commit_oid}", 
+            response_model= schemas.BranchResponseSchema, status_code=status.HTTP_200_OK )
 def reset_branch_to_previous_commit(repository_name : str, user_name: str, branch_name: str, 
                                     commit_oid: str, db: Session = Depends(database.get_db)):
    user = crud.get_one_or_error(db, models.User, name= user_name) 
@@ -26,4 +27,4 @@ def reset_branch_to_previous_commit(repository_name : str, user_name: str, branc
       repo.head_oid = commit.oid 
    branch.head_oid = commit.oid
    db.commit()
-   return {"message" : f"succesfully reseted branch {branch.name} to commit {commit.oid}"}
+   return branch
