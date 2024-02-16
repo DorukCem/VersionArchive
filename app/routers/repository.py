@@ -9,37 +9,35 @@ router = APIRouter(prefix= "/{user_name}", tags=["repository"], dependencies= [D
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
 def create_repo(user_name: str, repo_name : str, db: Session = Depends(database.get_db)):
-   try:
-      user = crud.get_one(db, models.User, name= user_name)
-      repo = crud.create_or_error(db, models.Repository, name= repo_name, creator= user)
-      master_branch = crud.create_or_error(db, models.Branch, name= "master", head_commit_oid = None, repository_id= repo.id)
-      repo.branches.append(master_branch)
-      repo.current_branch_id = master_branch.id
-      db.commit()
-      return {"message" : f"succesfully created repository: {repo_name}"}
-   except Exception as e:
-      raise e
-   
+   user = crud.get_one_or_error(db, models.User, name= user_name)
+   repo = crud.create_unique_or_error(db, models.Repository, name= repo_name, creator= user)
+   master_branch = crud.create_unique_or_error(db, models.Branch, name= "master", head_commit_oid = None, repository_id= repo.id)
+
+   repo.branches.append(master_branch)
+   repo.current_branch_id = master_branch.id
+   db.commit()
+   return {"message" : f"succesfully created repository: {repo_name}"}
+
 @router.put("/{repository_name}/change-branch", status_code=status.HTTP_200_OK)
 def change_branch(user_name: str, repository_name: str, branch_name: str, db: Session = Depends(database.get_db)):
-   user = crud.get_one(db, models.User, name= user_name)
-   repo = crud.get_one(db, models.Repository, name= repository_name, creator= user) 
-   branch = crud.get_one(db, models.Branch, name= branch_name, repository_id= repo.id)
+   user = crud.get_one_or_error(db, models.User, name= user_name)
+   repo = crud.get_one_or_error(db, models.Repository, name= repository_name, creator= user) 
+   branch = crud.get_one_or_error(db, models.Branch, name= branch_name, repository_id= repo.id)
    repo.current_branch = branch
    db.commit()
    return {"message" : f"succesfully changed branch to {branch_name} in repository {repo.name}"}
 
 @router.get("/{repository_name}/tree", status_code=status.HTTP_200_OK)
 def get_tree_for_repo(user_name: str, repository_name: str, db: Session = Depends(database.get_db)):
-   user = crud.get_one(db, models.User, name= user_name)
-   repo = crud.get_one(db, models.Repository, name= repository_name, creator_id= user.id) 
+   user = crud.get_one_or_error(db, models.User, name= user_name)
+   repo = crud.get_one_or_error(db, models.Repository, name= repository_name, creator_id= user.id) 
    
    # Create an empty directed graph
    graph = nx.DiGraph()
 
    for branch in repo.branches:
       head = branch.head_commit_oid
-      commit = crud.get_one(db, models.Commit, oid=head, repository_id= repo.id)
+      commit = crud.get_one_or_error(db, models.Commit, oid=head, repository_id= repo.id)
       while commit:
          graph.add_node(commit.oid, label=f"Commit: {commit.commit_message}")
 
@@ -48,7 +46,7 @@ def get_tree_for_repo(user_name: str, repository_name: str, db: Session = Depend
          else:
             root = commit.oid # Returnning this could be good for drawing better graphs
 
-         commit = crud.get_one(db, models.Commit, oid=commit.parent_oid, repository_id= repo.id)
+         commit = crud.get_one_or_none(db, models.Commit, oid=commit.parent_oid, repository_id= repo.id)
 
 
    return json_graph.node_link_data(graph)

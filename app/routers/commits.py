@@ -11,10 +11,8 @@ def commit_files(user_name: str, repository_name: str,
                  commit_message: str = Form(..., description="Commit message"),
                  db: Session = Depends(database.get_db)):
    try:
-      user = crud.get_one(db, models.User, name= user_name) 
-      repository = crud.get_one(db, models.Repository, name= repository_name, creator_id= user.id)
-      if not repository:
-         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Repository not found")
+      user = crud.get_one_or_error(db, models.User, name= user_name) 
+      repository = crud.get_one_or_error(db, models.Repository, name= repository_name, creator_id= user.id)
       
       # Put files into db
       new_objects = []
@@ -24,19 +22,18 @@ def commit_files(user_name: str, repository_name: str,
             continue
 
          obj_oid = utils.create_object_oid(contents)
-         object = crud.get_or_create(db, models.Object, name=file.filename, 
+         object = crud.create_or_get(db, models.Object, name=file.filename, 
                                      blob=contents, oid= str(obj_oid), repository_id = repository.id)
          new_objects.append(object)
       
       # Create new commit object
-      head_oid = repository.head_oid if repository else None
+      head_oid = repository.head_oid
       old_objects =  db.query(models.Commit).filter_by(oid=head_oid).first().objects if head_oid else []
       merged_objects = utils.merge_old_and_new_objects(old_objects, new_objects)
       commit_oid = utils.create_commit_oid(merged_objects)
       
-      commit = crud.get_or_create(db, models.Commit, oid = commit_oid, 
-                    commit_message=commit_message, parent_oid = head_oid, repository_id = repository.id) # ? I handled parent commits in wierd way where they get updated if current branch
-    
+      commit = crud.create_or_get(db, models.Commit, oid = commit_oid, commit_message=commit_message, 
+                                  parent_oid = head_oid, repository_id = repository.id) 
       for obj in merged_objects:
          commit.objects.append(obj)
       
@@ -49,12 +46,9 @@ def commit_files(user_name: str, repository_name: str,
 
       db.commit()
 
-   except HTTPException as http_exception:
-      db.rollback()
-      raise http_exception
    except Exception as e:
       db.rollback()
-      raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"{e}")
+      raise e
    finally:
       db.close()
 
@@ -63,23 +57,22 @@ def commit_files(user_name: str, repository_name: str,
 @router.get("/{commit_oid}/objects", status_code=status.HTTP_200_OK)
 def get_all_objects_for_commit(commit_oid : str, repository_name: str, user_name: str, 
                                db: Session = Depends(database.get_db)):
-   user = crud.get_one(db, models.User, name= user_name) 
-   repository = crud.get_one(db, models.Repository, name= repository_name, creator_id= user.id)
-   commit = crud.get_one(db, models.Commit, oid= commit_oid, repository_id= repository.id)
+   user = crud.get_one_or_error(db, models.User, name= user_name) 
+   repository = crud.get_one_or_error(db, models.Repository, name= repository_name, creator_id= user.id)
+   commit = crud.get_one_or_error(db, models.Commit, oid= commit_oid, repository_id= repository.id)
    return [obj.oid for obj in commit.objects]
 
-@router.get("/{branch_name}/log")
+@router.get("/{branch_name}/log", status_code=status.HTTP_200_OK)
 def log_commits_in_branch( repository_name : str, branch_name: str, log_depth : int = 10, db: Session = Depends(database.get_db)):
-   repo = crud.get_one(db, models.Repository, name= repository_name)
-   branch = crud.get_one(db, models.Branch, repository_id= repo.id, name= branch_name)
-   head = branch.head_commit_oid
-   commit = crud.get_one(db, models.Commit, oid= head, repository_id= repo.id)
+   repo = crud.get_one_or_error(db, models.Repository, name= repository_name)
+   branch = crud.get_one_or_error(db, models.Branch, repository_id= repo.id, name= branch_name)
+   commit = crud.get_one_or_error(db, models.Commit, oid= branch.head_commit_oid, repository_id= repo.id)
    commits = []
 
    while (commit and log_depth):
       commits.append(commit.oid)
       parent_oid = commit.parent_oid
-      commit = crud.get_one(db, models.Commit, oid= parent_oid, repository_id= repo.id)
+      commit = crud.get_one_or_none(db, models.Commit, oid= parent_oid, repository_id= repo.id)
       log_depth -= 1
 
    return commits

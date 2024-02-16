@@ -10,7 +10,7 @@ router = APIRouter(
 
 @router.post('/login')
 def login(request : OAuth2PasswordRequestForm = Depends(), db : Session = Depends(database.get_db)):
-   user = crud.get_one(db, models.User, name= request.username, password= request.password)
+   user = crud.get_one_or_none(db, models.User, name= request.username, password= request.password)
    if not user:
       raise HTTPException( status_code = status.HTTP_404_NOT_FOUND, detail= f"Invalid Credentials")
    
