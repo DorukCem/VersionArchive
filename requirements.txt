@@ -1,0 +1,5 @@
+fastapi==0.109.2
+networkx==2.8.8
+pydantic==2.6.1
+python_jose==3.3.0
+SQLAlchemy==2.0.23
