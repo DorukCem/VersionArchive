@@ -4,7 +4,7 @@ from sqlalchemy.orm import relationship
 
 class Object(Base):
    """
-    Represents an object in a version control system.
+    Represents an file an its contents in a version control system.
 
     Attributes:
     - id (int): The unique identifier for the object.
@@ -12,6 +12,10 @@ class Object(Base):
     - name (str): The name of the object.
     - blob (bytes): The binary content of the object (e.g., file contents).
     - repository_id (int): The foreign key reference to the repository to which the object belongs.
+    
+    - UniqueConstraint: 
+      Ensures that each combination of oid and repository_id is unique,
+      preventing objects with the same oid from being associated with the same repository more than once.
    """
    __tablename__ = "objects"
    id = Column(Integer, primary_key= True, autoincrement= True)
@@ -31,6 +35,7 @@ class Commit(Base):
    id = Column(Integer, primary_key= True, autoincrement= True)
    oid = Column(String, nullable= False)
    commit_message = Column(String)
+   # Oid of the commit before this commit
    parent_oid = Column(String, nullable= True)
 
    objects = relationship("Object", secondary="commit_object_association")
@@ -53,6 +58,11 @@ class Branch(Base):
    id = Column(Integer, primary_key=True, autoincrement=True)
    name = Column(String)
    
+   # The last commit that the branch is pointing to
+   """ o  → o  →  o  →  o  →  o → o
+            ↓                     ↑
+            o ← dev_branch    master_branch 
+   """
    head_commit_oid = Column(String, ForeignKey("commits.oid"))
    
    repository_id = Column(Integer, ForeignKey("repositories.id"))
@@ -69,6 +79,7 @@ class Repository(Base):
    name = Column(String)
    head_oid = Column(String, nullable= True, default= None)
    
+   # Specifies which branch we are working on
    current_branch_id = Column(Integer, ForeignKey("branches.id"), nullable=True)
    current_branch = relationship("Branch", uselist=False, foreign_keys=[current_branch_id])
 

@@ -29,6 +29,11 @@ def change_branch(user_name: str, repository_name: str, branch_name: str, db: Se
 
 @router.get("/{repository_name}/tree", status_code=status.HTTP_200_OK)
 def get_tree_for_repo(user_name: str, repository_name: str, db: Session = Depends(database.get_db)):
+   """Return the graph formed by commits and branches
+       o  → o  →  o  →  o  →  o → o
+            ↓                     ↑
+            o ← dev_branch    master_branch 
+   """
    user = crud.get_one_or_error(db, models.User, name= user_name)
    repo = crud.get_one_or_error(db, models.Repository, name= repository_name, creator_id= user.id) 
    

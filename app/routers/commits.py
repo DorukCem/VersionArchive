@@ -10,6 +10,18 @@ def commit_files(user_name: str, repository_name: str,
                  files: List[UploadFile] = File(..., description= "Upload your files"),
                  commit_message: str = Form(..., description="Commit message"),
                  db: Session = Depends(database.get_db)):
+   """
+      Commit files to a repository.
+
+      First we create the object models for the files and add them to the database
+      Then we create a commit object which points to these objects
+      
+      We also add any object pointed by the previous commit if they were NOT updated with the new commit 
+         This is usually not done in a git system. However we need a way to have something like a working directory
+         We are assuming that users still want to track files unless they explictly remove them 
+
+      Lastly we move the branch and repo heads to point at the latets commit
+   """
    try:
       user = crud.get_one_or_error(db, models.User, name= user_name) 
       repository = crud.get_one_or_error(db, models.Repository, name= repository_name, creator_id= user.id)
@@ -31,7 +43,6 @@ def commit_files(user_name: str, repository_name: str,
       old_objects =  db.query(models.Commit).filter_by(oid=head_oid).first().objects if head_oid else []
       merged_objects = utils.merge_old_and_new_objects(old_objects, new_objects)
       commit_oid = utils.create_commit_oid(merged_objects)
-      
       commit = crud.create_or_get(db, models.Commit, oid = commit_oid, commit_message=commit_message, 
                                   parent_oid = head_oid, repository_id = repository.id) 
       for obj in merged_objects:
@@ -64,11 +75,13 @@ def get_all_objects_for_commit(commit_oid : str, repository_name: str, user_name
 
 @router.get("/{branch_name}/log", response_model=List[schemas.CommitResponseSchema], status_code=status.HTTP_200_OK)
 def log_commits_in_branch( repository_name : str, branch_name: str, log_depth : int = 10, db: Session = Depends(database.get_db)):
+   """Return the linked list formed by the commits and their parents"""
    repo = crud.get_one_or_error(db, models.Repository, name= repository_name)
    branch = crud.get_one_or_error(db, models.Branch, repository_id= repo.id, name= branch_name)
    commit = crud.get_one_or_error(db, models.Commit, oid= branch.head_commit_oid, repository_id= repo.id)
    commits = []
 
+   # Walk the linked list
    while (commit and log_depth):
       commits.append(commit)
       parent_oid = commit.parent_oid

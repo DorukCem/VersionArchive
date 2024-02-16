@@ -7,7 +7,6 @@ router = APIRouter(prefix= "/{user_name}/{repository_name}/object", tags=["objec
 
 @router.get("/{object_oid}", response_model=schemas.ObjectResponseSchema,  status_code=status.HTTP_200_OK)
 def get_object(user_name:str, repository_name: str, object_oid : str, db: Session = Depends(database.get_db)):
-   """ Returns the contents of a file """
    user = crud.get_one_or_error(db, models.User, name= user_name) 
    repository = crud.get_one_or_error(db, models.Repository, name= repository_name, creator_id= user.id)
    object= crud.get_one_or_error(db, models.Object, oid = object_oid, repository_id= repository.id)
