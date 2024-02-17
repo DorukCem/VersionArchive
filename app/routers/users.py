@@ -12,7 +12,3 @@ router = APIRouter(
 def create_user(request : schemas.User, db: Session = Depends(database.get_db)):
    new_user = crud.create_unique_or_error(db, models.User, name= request.username, password= request.password)
    return new_user
-
-@router.get("/get-users")
-def get_users(db: Session = Depends(database.get_db)):
-   return db.query(models.User).all()

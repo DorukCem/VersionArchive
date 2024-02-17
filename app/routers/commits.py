@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File, Form
-from .. import database, models, crud, utils, schemas
+from .. import database, models, crud, utils, schemas, oauth2
 from sqlalchemy.orm import Session
 from typing import List, Optional
 
@@ -9,7 +9,7 @@ router = APIRouter(prefix= "/{user_name}/{repository_name}", tags= ["commit"])
 def commit_files(user_name: str, repository_name: str, 
                  files: List[UploadFile] = File(..., description= "Upload your files"),
                  commit_message: str = Form(..., description="Commit message"),
-                 db: Session = Depends(database.get_db)):
+                 db: Session = Depends(database.get_db), current_user = Depends(oauth2.get_current_user)):
    """
       Commit files to a repository.
 
@@ -22,6 +22,8 @@ def commit_files(user_name: str, repository_name: str,
 
       Lastly we move the branch and repo heads to point at the latets commit
    """
+   if current_user.name != user_name:
+      raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="User does not have permission to commit for another user")
    try:
       user = crud.get_one_or_error(db, models.User, name= user_name) 
       repository = crud.get_one_or_error(db, models.Repository, name= repository_name, creator_id= user.id)

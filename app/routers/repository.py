@@ -5,10 +5,14 @@ from typing import List, Optional
 import networkx as nx
 from networkx.readwrite import json_graph
 
-router = APIRouter(prefix= "/{user_name}", tags=["repository"], dependencies= [Depends(oauth2.get_current_user)])
+router = APIRouter(prefix= "/{user_name}", tags=["repository"])
 
 @router.post("/", response_model= schemas.RepositoryResponseSchema ,status_code=status.HTTP_201_CREATED)
-def create_repo(user_name: str, repo_name : str, db: Session = Depends(database.get_db)):
+def create_repo(user_name: str, repo_name : str, 
+                db: Session = Depends(database.get_db), current_user = Depends(oauth2.get_current_user)):
+   
+   if current_user.name != user_name:
+      raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="User does not have permission to create a repository for another user")
    user = crud.get_one_or_error(db, models.User, name= user_name)
    repo = crud.create_unique_or_error(db, models.Repository, name= repo_name, creator= user)
    master_branch = crud.create_unique_or_error(db, models.Branch, name= "master", head_commit_oid = None, repository_id= repo.id)
@@ -19,7 +23,10 @@ def create_repo(user_name: str, repo_name : str, db: Session = Depends(database.
    return repo
 
 @router.put("/{repository_name}/change-branch", response_model=schemas.ChangeBranchResponse, status_code=status.HTTP_200_OK)
-def change_branch(user_name: str, repository_name: str, branch_name: str, db: Session = Depends(database.get_db)):
+def change_branch(user_name: str, repository_name: str, branch_name: str, 
+                  db: Session = Depends(database.get_db), current_user = Depends(oauth2.get_current_user)):
+   if current_user.name != user_name:
+      raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="User does not have permission to change a branch for another user")
    user = crud.get_one_or_error(db, models.User, name= user_name)
    repo = crud.get_one_or_error(db, models.Repository, name= repository_name, creator= user) 
    branch = crud.get_one_or_error(db, models.Branch, name= branch_name, repository_id= repo.id)
@@ -35,8 +42,7 @@ def get_tree_for_repo(user_name: str, repository_name: str, db: Session = Depend
             o ← dev_branch    master_branch 
    """
    user = crud.get_one_or_error(db, models.User, name= user_name)
-   repo = crud.get_one_or_error(db, models.Repository, name= repository_name, creator_id= user.id) 
-   
+   repo = crud.get_one_or_error(db, models.Repository, name= repository_name, creator_id= user.id)  
    # Create an empty directed graph
    graph = nx.DiGraph()
 
@@ -45,13 +51,10 @@ def get_tree_for_repo(user_name: str, repository_name: str, db: Session = Depend
       commit = crud.get_one_or_error(db, models.Commit, oid=head, repository_id= repo.id)
       while commit:
          graph.add_node(commit.oid, label=f"Commit: {commit.commit_message}")
-
          if commit.parent_oid:
             graph.add_edge(commit.parent_oid, commit.oid)
          else:
             root = commit.oid # Returnning this could be good for drawing better graphs
-
          commit = crud.get_one_or_none(db, models.Commit, oid=commit.parent_oid, repository_id= repo.id)
-
 
    return json_graph.node_link_data(graph)
