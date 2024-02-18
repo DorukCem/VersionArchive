@@ -23,14 +23,14 @@ class CommitResponseSchema(BaseModel):
    id: int
    oid: str
    commit_message: str
-   parent_oid: Optional[str]
+   parent_oid: Optional[str] = None
    objects: List[ObjectResponseSchema] = []
 
 
 class BranchResponseSchema(BaseModel):
    id: int
    name: str
-   head_commit_oid: str
+   head_commit_oid: Optional[str] = None
    repository_id: int
 
 class ChangeBranchResponse(BaseModel):
@@ -40,8 +40,8 @@ class ChangeBranchResponse(BaseModel):
 class RepositoryResponseSchema(BaseModel):
    id: int
    name: str
-   head_oid: Optional[str]
-   current_branch_id: Optional[int]
+   head_oid: Optional[str] = None
+   current_branch_id: Optional[int] = None
    creator_id: int
    objects: List[ObjectResponseSchema] = []
    commits: List[CommitResponseSchema] = []
