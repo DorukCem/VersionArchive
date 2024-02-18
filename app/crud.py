@@ -33,8 +33,11 @@ def get_one_or_error(session, model, **kwargs):
       filters = ", ".join(f"{key}={value}" for key, value in kwargs.items())
       raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Could not find {model.__name__} with {filters}")
 
-def get_many(session, model, skip= 0, limit= 100, **kwargs):
-   return session.query(model).filter_by(**kwargs).offset(skip).limit(limit).all()
+def get_many(session, model, order=None, skip= 0, limit= 100, **kwargs):
+   query = session.query(model).filter_by(**kwargs)
+   if order:
+      query = query.order_by(order)
+   return query.offset(skip).limit(limit).all()
 
 def delete(session, db_object):
    session.delete(db_object)

@@ -74,20 +74,3 @@ def get_all_objects_for_commit(commit_oid : str, repository_name: str, user_name
    repository = crud.get_one_or_error(db, models.Repository, name= repository_name, creator_id= user.id)
    commit = crud.get_one_or_error(db, models.Commit, oid= commit_oid, repository_id= repository.id)
    return commit.objects
-
-@router.get("/{branch_name}/log", response_model=List[schemas.CommitResponseSchema], status_code=status.HTTP_200_OK)
-def log_commits_in_branch( repository_name : str, branch_name: str, log_depth : int = 10, db: Session = Depends(database.get_db)):
-   """Return the linked list formed by the commits and their parents"""
-   repo = crud.get_one_or_error(db, models.Repository, name= repository_name)
-   branch = crud.get_one_or_error(db, models.Branch, repository_id= repo.id, name= branch_name)
-   commit = crud.get_one_or_error(db, models.Commit, oid= branch.head_commit_oid, repository_id= repo.id)
-   commits = []
-
-   # Walk the linked list
-   while (commit and log_depth):
-      commits.append(commit)
-      parent_oid = commit.parent_oid
-      commit = crud.get_one_or_none(db, models.Commit, oid= parent_oid, repository_id= repo.id)
-      log_depth -= 1
-
-   return commits

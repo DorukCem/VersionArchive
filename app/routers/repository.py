@@ -7,14 +7,14 @@ from networkx.readwrite import json_graph
 
 router = APIRouter(prefix= "/{user_name}", tags=["repository"])
 
-@router.post("/", response_model= schemas.RepositoryResponseSchema ,status_code=status.HTTP_201_CREATED)
-def create_repo(user_name: str, repo_name : str, 
+@router.post("/{repository_name}", response_model= schemas.RepositoryResponseSchema, status_code=status.HTTP_201_CREATED)
+def create_repo(repository_name : str, user_name: str, 
                 db: Session = Depends(database.get_db), current_user = Depends(oauth2.get_current_user)):
    
    if current_user.name != user_name:
       raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="User does not have permission to create a repository for another user")
    user = crud.get_one_or_error(db, models.User, name= user_name)
-   repo = crud.create_unique_or_error(db, models.Repository, name= repo_name, creator= user)
+   repo = crud.create_unique_or_error(db, models.Repository, name= repository_name, creator= user)
    master_branch = crud.create_unique_or_error(db, models.Branch, name= "master", head_commit_oid = None, repository_id= repo.id)
 
    repo.branches.append(master_branch)
@@ -35,7 +35,7 @@ def change_branch(user_name: str, repository_name: str, branch_name: str,
    return schemas.ChangeBranchResponse(repo.name, branch_name=branch.name)
 
 @router.get("/{repository_name}/tree", status_code=status.HTTP_200_OK)
-def get_tree_for_repo(user_name: str, repository_name: str, db: Session = Depends(database.get_db)):
+def get_tree_for_repo(user_name: str, repository_name: str, depth= 100, db: Session = Depends(database.get_db)):
    """Return the graph formed by commits and branches
        o  → o  →  o  →  o  →  o → o
             ↓                     ↑
@@ -46,15 +46,13 @@ def get_tree_for_repo(user_name: str, repository_name: str, db: Session = Depend
    # Create an empty directed graph
    graph = nx.DiGraph()
 
-   for branch in repo.branches:
-      head = branch.head_commit_oid
-      commit = crud.get_one_or_error(db, models.Commit, oid=head, repository_id= repo.id)
-      while commit:
-         graph.add_node(commit.oid, label=f"Commit: {commit.commit_message}")
-         if commit.parent_oid:
-            graph.add_edge(commit.parent_oid, commit.oid)
-         else:
-            root = commit.oid # Returnning this could be good for drawing better graphs
-         commit = crud.get_one_or_none(db, models.Commit, oid=commit.parent_oid, repository_id= repo.id)
+   commits_in_repo = crud.get_many(db, models.Commit, limit=depth, repository_id= repo.id)
+
+   for commit in commits_in_repo:
+      graph.add_node(commit.oid, label=f"Commit: {commit.commit_message}")
+      if commit.parent_oid:
+         graph.add_edge(commit.parent_oid, commit.oid)
+      else:
+         root = commit.oid  # Store the root commit OID for better graph visualization
 
    return json_graph.node_link_data(graph)
