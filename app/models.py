@@ -1,6 +1,7 @@
 from .database import Base
-from sqlalchemy import Boolean, Column, Integer, String, ForeignKey, BLOB, Enum, UniqueConstraint
+from sqlalchemy import Boolean, Column, Integer, String, ForeignKey, BLOB, Enum, UniqueConstraint, DateTime
 from sqlalchemy.orm import relationship
+from sqlalchemy.sql import func
 
 class Object(Base):
    """
@@ -35,13 +36,13 @@ class Commit(Base):
    id = Column(Integer, primary_key= True, autoincrement= True)
    oid = Column(String, nullable= False)
    commit_message = Column(String)
+   timestamp = Column(DateTime(timezone= True), server_default=func.now())
    # Oid of the commit before this commit
    parent_oid = Column(String, nullable= True)
 
-   objects = relationship("Object", secondary="commit_object_association")
-
    repository_id = Column(Integer, ForeignKey("repositories.id"), nullable= False)
    repository = relationship("Repository", back_populates="commits")
+   objects = relationship("Object", secondary="commit_object_association")
 
    __table_args__ = (
       UniqueConstraint('oid', 'repository_id', name='unique_objects_per_repo'),
@@ -99,6 +100,7 @@ class User(Base):
 
    id = Column(Integer, primary_key=True, index=True)
    name = Column(String, unique= True)
-   password = Column(String)
+   hashed_password = Column(String)
+   disabled = Column(Boolean, default= False)
 
    repositories = relationship("Repository", back_populates="creator")
