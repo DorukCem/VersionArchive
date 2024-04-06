@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from .database import engine
 from . import models
 from .routers import repository, objects, commits, branch, authentication, users
+from fastapi.middleware.cors import CORSMiddleware
 
 # uvicorn backend.app.main:app --reload
 
@@ -15,12 +16,25 @@ app = FastAPI()
 
 models.Base.metadata.create_all(engine)
 
+origins = [
+   "http://localhost:5173",
+   "localhost:5173"
+]
+
 app.include_router(authentication.router)
 app.include_router(users.router)
 app.include_router(repository.router)
 app.include_router(branch.router)
 app.include_router(commits.router)
 app.include_router(objects.router)
+
+app.add_middleware(
+   CORSMiddleware,
+   allow_origins=origins,
+   allow_credentials=True,
+   allow_methods=["*"],
+   allow_headers=["*"]
+)
 
 @app.get("/")
 def index():

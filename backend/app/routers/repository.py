@@ -56,3 +56,9 @@ def get_tree_for_repo(user_name: str, repository_name: str, depth= 100, db: Sess
          root = commit.oid  # Store the root commit OID for better graph visualization
 
    return json_graph.node_link_data(graph)
+
+@router.get("/all-repos", response_model=List[str], status_code=status.HTTP_200_OK)
+def get_user_repositories(user_name: str, db: Session = Depends(database.get_db)):
+   user = crud.get_one_or_error(db, models.User, name=user_name)
+   repositories = crud.get_many(db, models.Repository, creator_id=user.id)
+   return [repo.name for repo in repositories]
