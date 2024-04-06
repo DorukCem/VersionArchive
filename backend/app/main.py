@@ -3,8 +3,9 @@ from .database import engine
 from . import models
 from .routers import repository, objects, commits, branch, authentication, users
 
-# * We are currently ignoring folders and only taking in files
+# uvicorn backend.app.main:app --reload
 
+# * We are currently ignoring folders and only taking in files
 
 # * Features will not be added until things above are done
 # TODO allow branching from previous commits
