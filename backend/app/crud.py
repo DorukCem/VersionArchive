@@ -26,10 +26,10 @@ def get_one_or_none(session, model, **kwargs):
    return session.query(model).filter_by(**kwargs).first()
 
 def get_one_or_error(session, model, **kwargs):
-   instance = session.query(model).filter_by(**kwargs).one()
-   if instance:
+   try:
+      instance = session.query(model).filter_by(**kwargs).one()
       return instance
-   else:
+   except:
       filters = ", ".join(f"{key}={value}" for key, value in kwargs.items())
       raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Could not find {model.__name__} with {filters}")
 
