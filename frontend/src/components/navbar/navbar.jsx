@@ -13,6 +13,7 @@ const navLinkStyle = {
 export default function Navbar() {
   const [menuClicked, setMenuClicked] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const navigate = useNavigate()
 
   function handleClick() {
     setMenuClicked(!menuClicked);
@@ -21,7 +22,7 @@ export default function Navbar() {
   function handleSearch(e) {
     e.preventDefault();
     if (searchQuery.trim() !== "") {
-      useNavigate(`/${searchQuery}`);
+      navigate(`/${searchQuery}`);
       setSearchQuery("");
     }
   }

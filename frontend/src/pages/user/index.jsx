@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 
-export default function UserProfile({ username }) {
+export default function UserProfile() {
   const [repos, setRepos] = useState([]);
+  const { username } = useParams();
 
   useEffect(() => {
     async function fetchUserRepos() {
@@ -22,8 +24,8 @@ export default function UserProfile({ username }) {
     <div className="App">
       <h1>{username}'s Repositories</h1>
       <ul>
-        {repos.map((repo) => (
-          <li>{repo}</li>
+        {repos.map((repo, id) => (
+          <li key={id}>{repo}</li>
         ))}
       </ul>
     </div>
