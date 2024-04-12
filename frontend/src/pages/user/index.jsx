@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 
 export default function UserProfile() {
   const [repos, setRepos] = useState([]);
+  const [userNotFound, setUserNotFound] = useState(false);
   const { username } = useParams();
 
   useEffect(() => {
@@ -11,14 +12,28 @@ export default function UserProfile() {
         const response = await fetch(
           `http://127.0.0.1:8000/${username}/all-repos`
         );
-        const data = await response.json();
-        setRepos(data);
+        if (!response.ok) {
+          if (response.status === 404) {
+            setUserNotFound(true);
+          } else {
+            throw new Error("Failed to fetch user's repositories");
+          }
+        } else {
+          const data = await response.json();
+          setRepos(data);
+          setUserNotFound(false);
+        }
       } catch (error) {
-        console.error("Failed to fetch user repos:", error);
+        console.error(error);
+        setUserNotFound(true);
       }
     }
     fetchUserRepos();
   }, [username]);
+
+  if (userNotFound) {
+    return <div>User not found</div>;
+  }
 
   return (
     <div className="App">

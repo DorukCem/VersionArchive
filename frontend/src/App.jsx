@@ -4,6 +4,7 @@ import Navbar from "./components/navbar/navbar";
 import Home from "./pages/home";
 import Tutorial from "./pages/tutorial";
 import UserProfile from "./pages/user";
+import Repository from "./pages/repository";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/tutorial" element={<Tutorial />} />
           <Route path="/:username" element={<UserProfile/>} />
+          <Route path="/:username/:repoName" element={<Repository/>} />
         </Routes>
       </div>
     </div>
