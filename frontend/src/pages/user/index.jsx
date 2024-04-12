@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import { NavLink } from "react-router-dom";
+import {useNavigate} from "react-router-dom"
 
 export default function UserProfile() {
   const [repos, setRepos] = useState([]);
@@ -39,8 +41,8 @@ export default function UserProfile() {
     <div className="App">
       <h1>{username}'s Repositories</h1>
       <ul>
-        {repos.map((repo, id) => (
-          <li key={id}>{repo}</li>
+        {repos.map((reponame, id) => (
+          <li  key={id}><NavLink to={`${reponame}`}>{reponame}</NavLink></li>
         ))}
       </ul>
     </div>
