@@ -1,0 +1,14 @@
+
+
+.list-item{
+  width: 200px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  margin: 1.5em;
+  cursor: pointer;
+  padding: 1em;
+  background: rgb(43, 31, 208);
+  position: relative;
+  border-radius: 5px;
+}

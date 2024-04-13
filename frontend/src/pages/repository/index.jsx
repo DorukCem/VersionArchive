@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { NavLink, useParams } from "react-router-dom";
 
-
-export default function Repository(){
+export default function Repository() {
   const { username, repoName } = useParams();
   const [objects, setObjects] = useState([]);
   const [repoNotFound, setRepoNotFound] = useState(false);
@@ -41,7 +40,9 @@ export default function Repository(){
       <h1>{repoName}'s contents</h1>
       <ul>
         {objects.map((obj) => (
-          <li key={obj.id}>{obj.name}</li>
+          <li key={obj.id}>
+            <NavLink to={`object/${obj.oid}`}>{obj.name}</NavLink>
+          </li>
         ))}
       </ul>
     </div>

@@ -1,7 +1,15 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { NavLink } from "react-router-dom";
-import {useNavigate} from "react-router-dom"
+import { useNavigate } from "react-router-dom";
+import "./user.css";
+
+const navLinkStyle = {
+  textDecoration: "none",
+  fontSize: "1.3rem",
+  fontWeight: 600,
+  color: "#fff",
+};
 
 export default function UserProfile() {
   const [repos, setRepos] = useState([]);
@@ -38,13 +46,19 @@ export default function UserProfile() {
   }
 
   return (
-    <div className="App">
+    <div>
       <h1>{username}'s Repositories</h1>
-      <ul>
-        {repos.map((reponame, id) => (
-          <li  key={id}><NavLink to={`${reponame}`}>{reponame}</NavLink></li>
-        ))}
-      </ul>
+      <div className="container">
+        <ul>
+          {repos.map((reponame, id) => (
+            <li className="list-item" key={id}>
+              <NavLink style={navLinkStyle} to={`${reponame}`}>
+                {reponame}
+              </NavLink>
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 }
