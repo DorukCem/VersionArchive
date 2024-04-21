@@ -2,6 +2,7 @@ import { NavLink } from "react-router-dom";
 import "./navbar-styles.css";
 import { useState } from "react";
 import {useNavigate} from "react-router-dom"
+import useAuth from "../../hooks/useAuth";
 
 const navLinkStyle = {
   textDecoration: "none",
@@ -26,6 +27,7 @@ export default function Navbar() {
       setSearchQuery("");
     }
   }
+  const {auth} = useAuth()
 
   return (
     <nav>
@@ -47,6 +49,11 @@ export default function Navbar() {
         <li>
           <NavLink to={"/tutorial"} style={navLinkStyle}>
             Tutorial
+          </NavLink>
+        </li>
+        <li>
+          <NavLink to={"/login"} style={navLinkStyle}>
+            {auth.username ? "Logout" : "Login"}
           </NavLink>
         </li>
       </ul>

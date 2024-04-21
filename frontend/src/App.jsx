@@ -6,6 +6,7 @@ import Tutorial from "./pages/tutorial";
 import UserProfile from "./pages/user";
 import Repository from "./pages/repository";
 import VCObject from "./pages/vc-object";
+import Login from "./pages/login/login";
 
 function App() {
   return (
@@ -15,9 +16,13 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/tutorial" element={<Tutorial />} />
-          <Route path="/:username" element={<UserProfile/>} />
-          <Route path="/:username/:repoName" element={<Repository/>} />
-          <Route path="/:username/:repoName/object/:oid" element={<VCObject/>} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/:username" element={<UserProfile />} />
+          <Route path="/:username/:repoName" element={<Repository />} />
+          <Route
+            path="/:username/:repoName/object/:oid"
+            element={<VCObject />}
+          />
         </Routes>
       </div>
     </div>
