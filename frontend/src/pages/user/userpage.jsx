@@ -4,6 +4,7 @@ import { NavLink } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import "./user.css";
 import NewRepo from "../newrepo/NewRepo";
+import Protected from "../../components/protected/protected";
 
 const navLinkStyle = {
   textDecoration: "none",
@@ -17,7 +18,7 @@ export default function UserProfile() {
   const [userNotFound, setUserNotFound] = useState(false);
   const { username } = useParams();
   const [buttonPressed, setButtonPressed] = useState(false);
-  const [refresh, setRefresh] = useState(0); 
+  const [refresh, setRefresh] = useState(0);
 
   useEffect(() => {
     async function fetchUserRepos() {
@@ -49,8 +50,8 @@ export default function UserProfile() {
   };
 
   const refreshRepos = () => {
-    setRefresh(refresh+1)
-  }
+    setRefresh(refresh + 1);
+  };
 
   if (userNotFound) {
     return <div>User not found</div>;
@@ -69,7 +70,9 @@ export default function UserProfile() {
   return (
     <div>
       <h1>{username}'s Repositories</h1>
-      <button onClick={handleCreateRepo}>Create a new Repository</button>
+      <Protected>
+        <button onClick={handleCreateRepo}>Create a new Repository</button>
+      </Protected>
       <div className="container">
         <ul>
           {repos.map((reponame, id) => (
