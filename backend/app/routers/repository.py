@@ -9,10 +9,8 @@ router = APIRouter(prefix= "/{user_name}", tags=["repository"])
 
 @router.post("/{repository_name}", response_model= schemas.RepositoryResponseSchema, status_code=status.HTTP_201_CREATED)
 def create_repo(repository_name : str, user_name: str, 
-                db: Session = Depends(database.get_db), current_user = Depends(oauth2.get_current_user)):
+                db: Session = Depends(database.get_db)):
    
-   if current_user.name != user_name:
-      raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="User does not have permission to create a repository for another user")
    user = crud.get_one_or_error(db, models.User, name= user_name)
    repo = crud.create_unique_or_error(db, models.Repository, name= repository_name, creator= user)
    master_branch = crud.create_unique_or_error(db, models.Branch, name= "master", head_commit_oid = None, repository_id= repo.id)
@@ -24,9 +22,7 @@ def create_repo(repository_name : str, user_name: str,
 
 @router.put("/{repository_name}/change-branch", response_model=schemas.ChangeBranchResponse, status_code=status.HTTP_200_OK)
 def change_branch(user_name: str, repository_name: str, branch_name: str, 
-                  db: Session = Depends(database.get_db), current_user = Depends(oauth2.get_current_user)):
-   if current_user.name != user_name:
-      raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="User does not have permission to change a branch for another user")
+                  db: Session = Depends(database.get_db)):
    user = crud.get_one_or_error(db, models.User, name= user_name)
    repo = crud.get_one_or_error(db, models.Repository, name= repository_name, creator= user) 
    branch = crud.get_one_or_error(db, models.Branch, name= branch_name, repository_id= repo.id)
