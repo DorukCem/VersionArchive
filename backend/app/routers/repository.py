@@ -5,7 +5,7 @@ from typing import List, Optional
 import networkx as nx
 from networkx.readwrite import json_graph
 
-router = APIRouter(prefix= "/{user_name}", tags=["repository"])
+router = APIRouter(prefix= "/repo/{user_name}", tags=["repository"])
 
 @router.post("/{repository_name}", response_model= schemas.RepositoryResponseSchema, status_code=status.HTTP_201_CREATED)
 def create_repo(repository_name : str, user_name: str, 

@@ -1,7 +1,7 @@
 import { NavLink } from "react-router-dom";
 import "./navbar-styles.css";
 import { useState } from "react";
-import {useNavigate} from "react-router-dom"
+import { useNavigate } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
 
 const navLinkStyle = {
@@ -14,7 +14,7 @@ const navLinkStyle = {
 export default function Navbar() {
   const [menuClicked, setMenuClicked] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   function handleClick() {
     setMenuClicked(!menuClicked);
@@ -27,7 +27,7 @@ export default function Navbar() {
       setSearchQuery("");
     }
   }
-  const {auth} = useAuth()
+  const { auth } = useAuth();
 
   return (
     <nav>
@@ -55,6 +55,13 @@ export default function Navbar() {
           <NavLink to={"/login"} style={navLinkStyle}>
             {auth.username ? "Logout" : "Login"}
           </NavLink>
+        </li>
+        <li>
+          {auth.username && (
+            <NavLink to={`/${auth.username}`} style={navLinkStyle}>
+              My Repositories
+            </NavLink>
+          )}
         </li>
       </ul>
 

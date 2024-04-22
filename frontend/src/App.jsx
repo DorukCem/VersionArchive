@@ -3,7 +3,7 @@ import { Routes, Route } from "react-router-dom";
 import Navbar from "./components/navbar/navbar";
 import Home from "./pages/home";
 import Tutorial from "./pages/tutorial";
-import UserProfile from "./pages/user";
+import UserProfile from "./pages/user/userpage";
 import Repository from "./pages/repository";
 import VCObject from "./pages/vc-object";
 import Login from "./pages/login/login";
