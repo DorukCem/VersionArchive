@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { NavLink } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import "./user.css";
-import NewRepo from "../newrepo/NewRepo";
+import NewRepo from "../../components/newrepo/NewRepo";
 import Protected from "../../components/protected/protected";
 
 const navLinkStyle = {
