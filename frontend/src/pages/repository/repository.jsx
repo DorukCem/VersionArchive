@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
 import { NavLink, useParams } from "react-router-dom";
 import Protected from "../../components/protected/protected";
-import NewCommit from "../../components/newcommit/newcommit.jsx";
+import NewCommit from "../../components/newcommit/newCommit";
 
 export default function Repository() {
   const { username, repoName } = useParams();
   const [objects, setObjects] = useState([]);
   const [repoNotFound, setRepoNotFound] = useState(false);
   const [buttonPressed, setButtonPressed] = useState(false);
+  const [refresh, setRefresh] = useState(0);
 
   useEffect(() => {
     async function fetchRepoContents() {
@@ -32,10 +33,14 @@ export default function Repository() {
       }
     }
     fetchRepoContents();
-  }, [repoName]);
+  }, [repoName, refresh]);
 
   const createNewCommit = () => {
     setButtonPressed(true);
+  };
+
+  const refreshRepos = () => {
+    setRefresh(refresh + 1);
   };
 
   if (repoNotFound) {
@@ -60,7 +65,7 @@ export default function Repository() {
       )}
       
       {!buttonPressed && <Protected><button onClick={createNewCommit}>Commit files</button></Protected>}
-      {buttonPressed && <Protected><NewCommit setButton={setButtonPressed}/></Protected>}
+      {buttonPressed && <Protected><NewCommit setButton={setButtonPressed} refreshRepos={refreshRepos}/></Protected>}
       
     </div>
   );

@@ -2,15 +2,11 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 
-//TODO refresh 
-//TODO fix backend stuff : Empty files, current branch and stuff
-//TODO add current branch to repository
-//TODO add get commit message to here
 
-
-export default function NewCommit({ setButton }) {
+export default function NewCommit({ setButton , refreshRepos }) {
   const [files, setFiles] = useState([]);
   const { username, repoName } = useParams();
+  const [commitMessage, setCommitMessage] = useState("");
 
   const handleCancel = () => {
     setButton(false);
@@ -18,7 +14,7 @@ export default function NewCommit({ setButton }) {
 
   const handleSubmit = () => {
     const formData = new FormData();
-    formData.append("commit_message", "your_commit_message_here");
+    formData.append("commit_message", commitMessage);
     files.forEach((file) => {
       formData.append("files", file);
     });
@@ -31,6 +27,7 @@ export default function NewCommit({ setButton }) {
       })
       .then((response) => {
         console.log("API response:", response.data);
+        refreshRepos()
         setButton(false);
       })
       .catch((error) => {
@@ -105,7 +102,7 @@ export default function NewCommit({ setButton }) {
 
   return (
     <div>
-      {files.length === 0 ? (
+      {(files.length === 0) ? (
         <div
           onDrop={handleDropFile}
           onDragOver={handleDragOver}
@@ -116,6 +113,7 @@ export default function NewCommit({ setButton }) {
           }}
         >
           <p>Drag files here to upload:</p>
+          
         </div>
       ) : (
         <div>
@@ -123,11 +121,18 @@ export default function NewCommit({ setButton }) {
             {Array.from(files).map((file, index) => (
               <li key={index}>{file.name}</li>
             ))}
-          </ul>
-          <button onClick={handleSubmit}>Submit</button>
+          </ul> 
+          
         </div>
       )}
+      <input
+            type="text"
+            value={commitMessage}
+            onChange={(e) => setCommitMessage(e.target.value)}
+            placeholder="Enter commit message"
+          />
       <button onClick={handleCancel}>Cancel</button>
+      {(files.length>0 && commitMessage!=="") && <button onClick={handleSubmit}>Submit</button>}
     </div>
   );
 }
