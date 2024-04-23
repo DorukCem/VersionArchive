@@ -3,7 +3,7 @@ from .. import database, models, crud, schemas, oauth2
 from sqlalchemy.orm import Session
 from typing import List, Optional
 
-router = APIRouter(prefix= "/{user_name}/{repository_name}", tags=["branch"])
+router = APIRouter(prefix= "/branch/{user_name}/{repository_name}", tags=["branch"])
 
 @router.post("/{branch_name}", response_model= schemas.BranchResponseSchema, status_code=status.HTTP_201_CREATED)
 def create_branch(user_name: str, repository_name : str, branch_name: str, 

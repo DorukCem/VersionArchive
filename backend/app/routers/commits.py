@@ -3,9 +3,9 @@ from .. import database, models, crud, utils, schemas, oauth2
 from sqlalchemy.orm import Session
 from typing import List, Optional
 
-router = APIRouter(prefix= "/{user_name}/{repository_name}", tags= ["commit"])
+router = APIRouter(prefix= "/commit/{user_name}/{repository_name}", tags= ["commit"])
 
-@router.post("/", status_code=status.HTTP_201_CREATED)
+@router.post("", status_code=status.HTTP_201_CREATED)
 def commit_files(user_name: str, repository_name: str, 
                  files: List[UploadFile] = File(..., description= "Upload your files"),
                  commit_message: str = Form(..., description="Commit message"),

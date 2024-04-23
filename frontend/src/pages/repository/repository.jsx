@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { NavLink, useParams } from "react-router-dom";
 import Protected from "../../components/protected/protected";
-import NewCommit from "../../components/newcommit/NewCommit.jsx";
+import NewCommit from "../../components/newcommit/newcommit.jsx";
 
 export default function Repository() {
   const { username, repoName } = useParams();
