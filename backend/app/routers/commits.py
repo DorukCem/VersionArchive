@@ -3,10 +3,10 @@ from .. import database, models, crud, utils, schemas, oauth2
 from sqlalchemy.orm import Session
 from typing import List, Optional
 
-router = APIRouter(prefix= "/commit/{user_name}/{repository_name}", tags= ["commit"])
+router = APIRouter(prefix= "/commit/{user_name}/{repository_name}/{branch_name}", tags= ["commit"])
 
 @router.post("", status_code=status.HTTP_201_CREATED)
-def commit_files(user_name: str, repository_name: str, 
+def commit_files(user_name: str, repository_name: str, branch_name: str,
                  files: List[UploadFile] = File(..., description= "Upload your files"),
                  commit_message: str = Form(..., description="Commit message"),
                  db: Session = Depends(database.get_db)):
@@ -25,9 +25,9 @@ def commit_files(user_name: str, repository_name: str,
    try:
       user = crud.get_one_or_error(db, models.User, name= user_name) 
       repository = crud.get_one_or_error(db, models.Repository, name= repository_name, creator_id= user.id)
-      
+      branch = crud.get_one_or_error(db, models.Branch, name = branch_name, repository_id= repository.id) 
       # Put files into db
-      new_objects = []
+      new_objects = [] 
       for file in files:
          contents = file.file.read()
          if not contents: # ? We can skip empty files 
@@ -39,7 +39,7 @@ def commit_files(user_name: str, repository_name: str,
          new_objects.append(object)
       
       # Create new commit object
-      head_oid = repository.head_oid
+      head_oid = branch.head_commit_oid
       old_objects =  db.query(models.Commit).filter_by(oid=head_oid).first().objects if head_oid else []
       merged_objects = utils.merge_old_and_new_objects(old_objects, new_objects)
       commit_oid = utils.create_commit_oid(merged_objects)
@@ -49,11 +49,8 @@ def commit_files(user_name: str, repository_name: str,
          commit.objects.append(obj)
       
       # Move branch and head
-      repository.head_oid = commit.oid
-      if repository.current_branch:
-         branch= repository.current_branch
-         commit.parent_oid = branch.head_commit_oid
-         branch.head_commit_oid = commit.oid
+      commit.parent_oid = branch.head_commit_oid
+      branch.head_commit_oid = commit.oid
 
       db.commit()
 

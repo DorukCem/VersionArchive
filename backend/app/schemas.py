@@ -40,8 +40,6 @@ class ChangeBranchResponse(BaseModel):
 class RepositoryResponseSchema(BaseModel):
    id: int
    name: str
-   head_oid: Optional[str] = None
-   current_branch_id: Optional[int] = None
    creator_id: int
    objects: List[ObjectResponseSchema] = []
    commits: List[CommitResponseSchema] = []

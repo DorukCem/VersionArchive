@@ -5,16 +5,17 @@ from typing import List, Optional
 
 router = APIRouter(prefix= "/branch/{user_name}/{repository_name}", tags=["branch"])
 
-@router.post("/{branch_name}", response_model= schemas.BranchResponseSchema, status_code=status.HTTP_201_CREATED)
-def create_branch(user_name: str, repository_name : str, branch_name: str, 
+@router.post("/new", response_model= schemas.BranchResponseSchema, status_code=status.HTTP_201_CREATED)
+def create_branch(user_name: str, repository_name : str, old_branch_name : str, branch_name: str, 
                   db: Session = Depends(database.get_db)):
 
    user = crud.get_one_or_error(db, models.User, name= user_name) 
    repo = crud.get_one_or_error(db, models.Repository, name = repository_name, creator_id= user.id)
-   branch = crud.create_unique_or_error(db, models.Branch, name= branch_name, 
-                                 repository_id= repo.id, head_commit_oid= repo.head_oid)
+   current_branch = crud.get_one_or_error(db, models.Branch, name = old_branch_name, repository_id=repo.id)
+   new_branch = crud.create_unique_or_error(db, models.Branch, name= branch_name, 
+                                 repository_id= repo.id, head_commit_oid= current_branch.head_commit_oid)
    db.commit()
-   return branch
+   return new_branch
    
    
 @router.put("/{branch_name}/reset/{commit_oid}", 
@@ -30,8 +31,7 @@ def reset_branch_to_previous_commit(repository_name : str, user_name: str, branc
    repo = crud.get_one_or_error(db, models.Repository, name = repository_name, creator_id= user.id)
    commit = crud.get_one_or_error(db, models.Commit, oid= commit_oid)
    branch = crud.get_one_or_error(db, models.Branch, repository_id = repo.id, name= branch_name)
-   if repo.current_branch_id == branch.id:
-      repo.head_oid = commit.oid 
-   branch.head_oid = commit.oid
+
+   branch.head_commit_oid = commit.oid
    db.commit()
    return branch

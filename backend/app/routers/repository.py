@@ -16,19 +16,9 @@ def create_repo(repository_name : str, user_name: str,
    master_branch = crud.create_unique_or_error(db, models.Branch, name= "master", head_commit_oid = None, repository_id= repo.id)
 
    repo.branches.append(master_branch)
-   repo.current_branch_id = master_branch.id
    db.commit()
    return repo
 
-@router.put("/{repository_name}/change-branch", response_model=schemas.ChangeBranchResponse, status_code=status.HTTP_200_OK)
-def change_branch(user_name: str, repository_name: str, branch_name: str, 
-                  db: Session = Depends(database.get_db)):
-   user = crud.get_one_or_error(db, models.User, name= user_name)
-   repo = crud.get_one_or_error(db, models.Repository, name= repository_name, creator= user) 
-   branch = crud.get_one_or_error(db, models.Branch, name= branch_name, repository_id= repo.id)
-   repo.current_branch = branch
-   db.commit()
-   return schemas.ChangeBranchResponse(repo.name, branch_name=branch.name)
 
 @router.get("/{repository_name}/tree", status_code=status.HTTP_200_OK)
 def get_tree_for_repo(user_name: str, repository_name: str, depth= 100, db: Session = Depends(database.get_db)):

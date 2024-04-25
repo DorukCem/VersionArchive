@@ -78,11 +78,6 @@ class Repository(Base):
    __tablename__ = "repositories"
    id = Column(Integer, primary_key=True, autoincrement= True)
    name = Column(String)
-   head_oid = Column(String, nullable= True, default= None)
-   
-   # Specifies which branch we are working on
-   current_branch_id = Column(Integer, ForeignKey("branches.id"), nullable=True)
-   current_branch = relationship("Branch", uselist=False, foreign_keys=[current_branch_id])
 
    creator_id = Column(Integer, ForeignKey('users.id'), nullable= False)
    creator = relationship("User", back_populates="repositories")
