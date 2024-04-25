@@ -7,7 +7,7 @@ from networkx.readwrite import json_graph
 
 router = APIRouter(prefix= "/repo/{user_name}", tags=["repository"])
 
-@router.post("/{repository_name}", response_model= schemas.RepositoryResponseSchema, status_code=status.HTTP_201_CREATED)
+@router.post("create/{repository_name}", response_model= schemas.RepositoryResponseSchema, status_code=status.HTTP_201_CREATED)
 def create_repo(repository_name : str, user_name: str, 
                 db: Session = Depends(database.get_db)):
    
@@ -48,3 +48,16 @@ def get_user_repositories(user_name: str, db: Session = Depends(database.get_db)
    user = crud.get_one_or_error(db, models.User, name= user_name)
    repositories = crud.get_many(db, models.Repository, creator_id=user.id)
    return [repo.name for repo in repositories]
+
+@router.get("/{repository_name}/all-branches", response_model=List[str], status_code=status.HTTP_200_OK)
+def get_repo_branches(user_name: str, repository_name:str, db: Session = Depends(database.get_db)):
+   user = crud.get_one_or_error(db, models.User, name= user_name)
+   repo = crud.get_one_or_error(db, models.Repository, name= repository_name, creator_id= user.id) 
+   branches = crud.get_many(db, models.Branch, repository_id = repo.id) 
+   return [br.name for br in branches]
+
+@router.get("/{repository_name}", response_model=schemas.RepositoryResponseSchema, status_code=status.HTTP_200_OK)
+def get_repo(user_name: str, repository_name:str, db: Session = Depends(database.get_db)):
+   user = crud.get_one_or_error(db, models.User, name= user_name)
+   repo = crud.get_one_or_error(db, models.Repository, name= repository_name, creator_id= user.id) 
+   return repo

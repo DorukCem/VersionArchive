@@ -40,9 +40,6 @@ class ChangeBranchResponse(BaseModel):
 class RepositoryResponseSchema(BaseModel):
    id: int
    name: str
-   creator_id: int
-   objects: List[ObjectResponseSchema] = []
-   commits: List[CommitResponseSchema] = []
    branches: List[BranchResponseSchema] = []
 
 class UserResponseSchema(BaseModel):
