@@ -7,7 +7,7 @@ from networkx.readwrite import json_graph
 
 router = APIRouter(prefix= "/repo/{user_name}", tags=["repository"])
 
-@router.post("create/{repository_name}", response_model= schemas.RepositoryResponseSchema, status_code=status.HTTP_201_CREATED)
+@router.post("/create/{repository_name}", response_model= schemas.RepositoryResponseSchema, status_code=status.HTTP_201_CREATED)
 def create_repo(repository_name : str, user_name: str, 
                 db: Session = Depends(database.get_db)):
    

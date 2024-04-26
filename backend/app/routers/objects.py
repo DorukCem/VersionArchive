@@ -5,7 +5,7 @@ from typing import List, Optional
 
 router = APIRouter(prefix= "/object/{user_name}/{repository_name}", tags=["object"])
 
-@router.get("/all/{branch_name}", response_model= List[schemas.ObjectResponseSchema], status_code= status.HTTP_200_OK)
+@router.get("/{branch_name}/all", response_model= List[schemas.ObjectResponseSchema], status_code= status.HTTP_200_OK)
 def get_all_for_repository(user_name: str, repository_name : str, branch_name:str, db: Session = Depends(database.get_db)):
    user = crud.get_one_or_error(db, models.User, name= user_name) 
    repository = crud.get_one_or_error(db, models.Repository, name= repository_name, creator_id= user.id)

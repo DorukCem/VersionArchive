@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 
 
-export default function NewCommit({ setButton , refreshRepos }) {
+export default function NewCommit({ setButton , refreshRepos, branchName }) {
   const [files, setFiles] = useState([]);
   const { username, repoName } = useParams();
   const [commitMessage, setCommitMessage] = useState("");
@@ -20,7 +20,7 @@ export default function NewCommit({ setButton , refreshRepos }) {
     });
 
     axios
-      .post(`http://127.0.0.1:8000/commit/${username}/${repoName}`, formData, {
+      .post(`http://127.0.0.1:8000/commit/${username}/${repoName}/${branchName}`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

@@ -1,20 +1,21 @@
 import { useState, useEffect } from "react";
 import { NavLink, useParams } from "react-router-dom";
-import Protected from "../../components/protected/protected";
-import NewCommit from "../../components/newcommit/newCommit";
+
+import Branch from "../../components/branch/branch";
+
 
 export default function Repository() {
   const { username, repoName } = useParams();
-  const [objects, setObjects] = useState([]);
+  const [branches, setBranches] = useState([]);
   const [repoNotFound, setRepoNotFound] = useState(false);
-  const [buttonPressed, setButtonPressed] = useState(false);
   const [refresh, setRefresh] = useState(0);
+  const [selectedBranch, setSelectedBranch] = useState("");
 
   useEffect(() => {
-    async function fetchRepoContents() {
+    async function fetchBranches() {
       try {
         const response = await fetch(
-          `http://127.0.0.1:8000/object/${username}/${repoName}/all`
+          `http://127.0.0.1:8000/repo/${username}/${repoName}/all-branches`
         );
         if (!response.ok) {
           if (response.status === 404) {
@@ -24,7 +25,8 @@ export default function Repository() {
           }
         } else {
           const data = await response.json();
-          setObjects(data);
+          setBranches(data);
+          setSelectedBranch(data.length > 0 ? data[0] : ""); // Set default branch
           setRepoNotFound(false);
         }
       } catch (error) {
@@ -32,14 +34,10 @@ export default function Repository() {
         setRepoNotFound(true);
       }
     }
-    fetchRepoContents();
+    fetchBranches();
   }, [repoName, refresh]);
 
-  const createNewCommit = () => {
-    setButtonPressed(true);
-  };
-
-  const refreshRepos = () => {
+  const refreshBranches = () => {
     setRefresh(refresh + 1);
   };
 
@@ -47,26 +45,25 @@ export default function Repository() {
     return <div>Repository does not exist</div>;
   }
 
-  return (
-    <div className="App">
-      {objects.length > 0 ? (
-        <div>
-          <h1>{repoName}'s contents</h1>
-          <ul>
-            {objects.map((obj) => (
-              <li key={obj.id}>
-                <NavLink to={`object/${obj.oid}`}>{obj.name}</NavLink>
-              </li>
-            ))}
-          </ul>{" "}
-        </div>
-      ) : (
-        <h1>This repo is empty, start by commiting a file</h1>
+  const handleBranchChange = (e) => {
+    setSelectedBranch(e.target.value);
+  };
+  
+  return branches.length > 0 ? (
+    <div>
+      <h4>Current Branch: {selectedBranch}</h4>
+      <select value={selectedBranch} onChange={handleBranchChange}>
+        {branches.map((branch) => (
+          <option key={branch} value={branch}>
+            {branch}
+          </option>
+        ))}
+      </select>
+      {selectedBranch && (
+        <Branch branchName={selectedBranch} setRepoNotFound={setRepoNotFound} />
       )}
-      
-      {!buttonPressed && <Protected><button onClick={createNewCommit}>Commit files</button></Protected>}
-      {buttonPressed && <Protected><NewCommit setButton={setButtonPressed} refreshRepos={refreshRepos}/></Protected>}
-      
     </div>
+  ) : (
+    <div>Loading...</div>
   );
 }
