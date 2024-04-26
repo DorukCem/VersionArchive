@@ -5,7 +5,7 @@ export default function NewRepo({ setButtonPressed, username, refreshRepos }) {
   const [repoName, setRepoName] = useState('');
   const [error, setError] = useState("");
 
-  const url = `http://127.0.0.1:8000/repo/${username}/${repoName}`
+  const url = `http://127.0.0.1:8000/repo/${username}/create/${repoName}`
   const handleSubmitRepo = () => {
     axios.post(url, {
       // Add any data you want to send in the request body

@@ -33,9 +33,9 @@ class BranchResponseSchema(BaseModel):
    head_commit_oid: Optional[str] = None
    repository_id: int
 
-class ChangeBranchResponse(BaseModel):
-   repository_name: str
-   branch_name: str
+class BranchCreateSchema(BaseModel):
+   old_branch_name: str
+   new_branch_name: str
 
 class RepositoryResponseSchema(BaseModel):
    id: int
