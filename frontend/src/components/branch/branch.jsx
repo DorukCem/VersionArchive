@@ -33,7 +33,7 @@ export default function Branch({ branchName, setRepoNotFound }) {
       }
     }
     fetchRepoContents();
-  }, [repoName, refresh]);
+  }, [repoName, refresh, branchName]);
 
   const createNewCommit = () => {
     setButtonPressed(true);
@@ -42,7 +42,6 @@ export default function Branch({ branchName, setRepoNotFound }) {
   const refreshRepos = () => {
     setRefresh(refresh + 1);
   };
-
 
   return (
     <div className="App">

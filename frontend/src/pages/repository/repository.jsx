@@ -26,7 +26,7 @@ export default function Repository() {
         } else {
           const data = await response.json();
           setBranches(data);
-          setSelectedBranch(data.length > 0 ? data[0] : ""); // Set default branch
+          setSelectedBranch(data.length > 0 ? data[0] : ""); 
           setRepoNotFound(false);
         }
       } catch (error) {
