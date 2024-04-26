@@ -2,19 +2,19 @@ import { useState, useEffect } from "react";
 import { NavLink, useParams } from "react-router-dom";
 import Protected from "../../components/protected/protected";
 import NewCommit from "../../components/newcommit/newCommit";
+import Commit from "../commit/commit";
 
 export default function Branch({ branchName, setRepoNotFound }) {
   const { username, repoName } = useParams();
-  const [objects, setObjects] = useState([]);
-
   const [buttonPressed, setButtonPressed] = useState(false);
   const [refresh, setRefresh] = useState(0);
+  const [branchData, setBranchData] = useState(null) 
 
   useEffect(() => {
-    async function fetchRepoContents() {
+    async function fetchBranchContents() {
       try {
         const response = await fetch(
-          `http://127.0.0.1:8000/object/${username}/${repoName}/${branchName}/all`
+          `http://127.0.0.1:8000/branch/${username}/${repoName}/${branchName}`
         );
         if (!response.ok) {
           if (response.status === 404) {
@@ -24,7 +24,7 @@ export default function Branch({ branchName, setRepoNotFound }) {
           }
         } else {
           const data = await response.json();
-          setObjects(data);
+          setBranchData(data);
           setRepoNotFound(false);
         }
       } catch (error) {
@@ -32,8 +32,8 @@ export default function Branch({ branchName, setRepoNotFound }) {
         setRepoNotFound(true);
       }
     }
-    fetchRepoContents();
-  }, [repoName, refresh, branchName]);
+    fetchBranchContents();
+  }, [repoName, branchName]);
 
   const createNewCommit = () => {
     setButtonPressed(true);
@@ -45,20 +45,7 @@ export default function Branch({ branchName, setRepoNotFound }) {
 
   return (
     <div className="App">
-      {objects.length > 0 ? (
-        <div>
-          <h1>{repoName} {branchName} contents</h1>
-          <ul>
-            {objects.map((obj) => (
-              <li key={obj.id}>
-                <NavLink to={`object/${obj.oid}`}>{obj.name}</NavLink>
-              </li>
-            ))}
-          </ul>{" "}
-        </div>
-      ) : (
-        <h1>This repo is empty, start by commiting a file</h1>
-      )}
+      {branchData && <Commit commit_oid={branchData.head_commit_oid} setRepoNotFound={setRepoNotFound}/>}
 
       {!buttonPressed && (
         <Protected>

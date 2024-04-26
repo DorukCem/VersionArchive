@@ -57,11 +57,10 @@
     const handleBranchChange = (e) => {
       setSelectedBranch(e.target.value);
     };
-    console.log(selectedBranch)
 
     return branches.length > 0 ? (
       <div>
-        <h4>Current Branch: {selectedBranch}</h4>
+        <h4>Repository {repoName}</h4>
         <select value={selectedBranch} onChange={handleBranchChange}>
           {branches.map((branch) => (
             <option key={branch} value={branch}>

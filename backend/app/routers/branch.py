@@ -16,6 +16,16 @@ def create_branch(user_name: str, repository_name : str, branch_data:schemas.Bra
                                  repository_id= repo.id, head_commit_oid= current_branch.head_commit_oid)
    db.commit()
    return new_branch
+
+
+@router.get("/{branch_name}", response_model= schemas.BranchResponseSchema, status_code=status.HTTP_200_OK)
+def get_branch(user_name: str, repository_name : str, branch_name:str, 
+                  db: Session = Depends(database.get_db)):
+
+   user = crud.get_one_or_error(db, models.User, name= user_name) 
+   repo = crud.get_one_or_error(db, models.Repository, name = repository_name, creator_id= user.id)
+   current_branch = crud.get_one_or_error(db, models.Branch, name = branch_name, repository_id=repo.id)
+   return current_branch
    
    
 @router.put("/{branch_name}/reset/{commit_oid}", 
