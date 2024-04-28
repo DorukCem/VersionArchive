@@ -44,7 +44,7 @@ def commit_files(user_name: str, repository_name: str, branch_name: str,
       merged_objects = utils.merge_old_and_new_objects(old_objects, new_objects)
       commit_oid = utils.create_commit_oid(merged_objects)
       commit = crud.create_or_get(db, models.Commit, oid = commit_oid, commit_message=commit_message, 
-                                  parent_oid = head_oid, repository_id = repository.id, branch_id= branch.id) 
+                                  parent_oid = head_oid, repository_id = repository.id) 
       
       # Check if commit obj association done before
       is_commit_in_db = crud.get_one_or_none(db, models.CommitObjectAssociation, commit_oid = commit_oid)
@@ -76,10 +76,9 @@ def get_all_objects_for_commit(commit_oid : str, repository_name: str, user_name
    return commit.objects
 
 @router.get("/all", response_model=List[schemas.CommitOverviewResponseSchema], status_code=status.HTTP_200_OK)
-def get_all_commits_in_branch(branch_name : str, repository_name: str, user_name: str, 
+def get_all_commits_in_repo(branch_name : str, repository_name: str, user_name: str, 
                                db: Session = Depends(database.get_db)):
    user = crud.get_one_or_error(db, models.User, name= user_name) 
    repository = crud.get_one_or_error(db, models.Repository, name= repository_name, creator_id= user.id)
-   branch = crud.get_one_or_error(db, models.Branch, name = branch_name, repository_id= repository.id) 
-   commits = crud.get_many(db, models.Commit, repository_id= repository.id, branch_id = branch.id)
+   commits = crud.get_many(db, models.Commit, repository_id= repository.id)
    return commits

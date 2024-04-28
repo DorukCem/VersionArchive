@@ -8,7 +8,8 @@ export default function Branch({ branchName, setRepoNotFound }) {
   const { username, repoName } = useParams();
   const [buttonPressed, setButtonPressed] = useState(false);
   const [refresh, setRefresh] = useState(0);
-  const [branchData, setBranchData] = useState(null) 
+  const [branchData, setBranchData] = useState(null);
+  const [commits, setCommits] = useState([]);
 
   useEffect(() => {
     async function fetchBranchContents() {
@@ -32,7 +33,24 @@ export default function Branch({ branchName, setRepoNotFound }) {
         setRepoNotFound(true);
       }
     }
+    async function fetchCommits() {
+      try {
+        const response = await fetch(
+          `http://127.0.0.1:8000/branch/${username}/${repoName}/${branchName}/commits`
+        );
+        if (!response.ok) {
+          throw new Error("Failed to fetch commits in branch");
+        } else {
+          const data = await response.json();
+          setCommits(data);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
     fetchBranchContents();
+    fetchCommits();
   }, [repoName, branchName, refresh]);
 
   const createNewCommit = () => {
@@ -43,9 +61,19 @@ export default function Branch({ branchName, setRepoNotFound }) {
     setRefresh(refresh + 1);
   };
 
+  console.log(commits)
+
   return (
     <div className="App">
-      {branchData && branchData.head_commit_oid ? <Commit branchName={branchName} commit_oid={branchData.head_commit_oid} setRepoNotFound={setRepoNotFound}/> : <h1>This branch does not have a commit</h1>}
+      {branchData && branchData.head_commit_oid ? (
+        <Commit
+          branchName={branchName}
+          commit_oid={branchData.head_commit_oid}
+          setRepoNotFound={setRepoNotFound}
+        />
+      ) : (
+        <h1>This branch does not have a commit</h1>
+      )}
 
       {!buttonPressed && (
         <Protected>
@@ -54,9 +82,21 @@ export default function Branch({ branchName, setRepoNotFound }) {
       )}
       {buttonPressed && (
         <Protected>
-          <NewCommit setButton={setButtonPressed} refreshRepos={refreshRepos} branchName={branchName}/>
+          <NewCommit
+            setButton={setButtonPressed}
+            refreshRepos={refreshRepos}
+            branchName={branchName}
+          />
         </Protected>
       )}
+
+      <h2>Commits in {branchName}:</h2>
+      <ul>
+        {commits.map((commit, ind) => (
+          <li key={ind}>{commit.commit_message}</li>
+        ))}
+      </ul>
+
     </div>
   );
 }

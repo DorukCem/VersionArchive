@@ -36,6 +36,8 @@ class BranchResponseSchema(BaseModel):
    name: str
    head_commit_oid: Optional[str] = None
    repository_id: int
+   commits: List[CommitOverviewResponseSchema] = []
+
 
 class BranchCreateSchema(BaseModel):
    old_branch_name: str

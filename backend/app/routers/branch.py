@@ -14,7 +14,6 @@ def create_branch(user_name: str, repository_name : str, branch_data:schemas.Bra
    current_branch = crud.get_one_or_error(db, models.Branch, name = branch_data.old_branch_name, repository_id=repo.id)
    new_branch = crud.create_unique_or_error(db, models.Branch, name= branch_data.new_branch_name, 
                                  repository_id= repo.id, head_commit_oid= current_branch.head_commit_oid)
-   new_branch.commits = [x for x in current_branch.commits]
    db.commit()
    return new_branch
 
@@ -27,6 +26,23 @@ def get_branch(user_name: str, repository_name : str, branch_name:str,
    repo = crud.get_one_or_error(db, models.Repository, name = repository_name, creator_id= user.id)
    current_branch = crud.get_one_or_error(db, models.Branch, name = branch_name, repository_id=repo.id)
    return current_branch
+   
+@router.get("/{branch_name}/commits", response_model= List[schemas.CommitOverviewResponseSchema], status_code=status.HTTP_200_OK)
+def get_branch_commits(user_name: str, repository_name : str, branch_name:str, 
+                  db: Session = Depends(database.get_db)):
+
+   user = crud.get_one_or_error(db, models.User, name= user_name) 
+   repo = crud.get_one_or_error(db, models.Repository, name = repository_name, creator_id= user.id)
+   current_branch = crud.get_one_or_error(db, models.Branch, name = branch_name, repository_id=repo.id)
+   head = current_branch.head_commit_oid
+   commits_in_repo = crud.get_many(db, models.Commit, repository_id= repo.id)
+   commits_in_repo = {c.oid: c for c in commits_in_repo}
+   commits_in_branch = []
+   while(head):
+      commit = commits_in_repo[head]
+      commits_in_branch.append(commit)
+      head = commit.parent_oid
+   return commits_in_branch
    
    
 @router.put("/{branch_name}/reset/{commit_oid}", 
