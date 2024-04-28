@@ -25,6 +25,11 @@ class CommitResponseSchema(BaseModel):
    parent_oid: Optional[str] = None
    objects: List[ObjectResponseSchema] = []
 
+class CommitOverviewResponseSchema(BaseModel):
+   id: int
+   oid: str
+   commit_message: str
+   parent_oid: Optional[str] = None
 
 class BranchResponseSchema(BaseModel):
    id: int

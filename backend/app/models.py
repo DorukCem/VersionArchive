@@ -35,6 +35,10 @@ class Commit(Base):
 
    repository_id = Column(Integer, ForeignKey("repositories.id"), nullable= False)
    repository = relationship("Repository", back_populates="commits")
+
+   branch_id = Column(Integer, ForeignKey("branches.id"), nullable= False)
+   branch = relationship("Branch", back_populates="commits", foreign_keys=[branch_id])
+
    objects = relationship("Object", secondary="commit_object_association")
 
 # Many to Many 
@@ -57,6 +61,7 @@ class Branch(Base):
    
    repository_id = Column(Integer, ForeignKey("repositories.id"))
    repository = relationship("Repository", back_populates="branches", foreign_keys=[repository_id])
+   commits = relationship("Commit", back_populates="branch", foreign_keys="Commit.branch_id")
 
    __table_args__ = (
       UniqueConstraint('name', 'repository_id', name='unique_branch_per_repo'),

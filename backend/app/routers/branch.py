@@ -14,6 +14,7 @@ def create_branch(user_name: str, repository_name : str, branch_data:schemas.Bra
    current_branch = crud.get_one_or_error(db, models.Branch, name = branch_data.old_branch_name, repository_id=repo.id)
    new_branch = crud.create_unique_or_error(db, models.Branch, name= branch_data.new_branch_name, 
                                  repository_id= repo.id, head_commit_oid= current_branch.head_commit_oid)
+   new_branch.commits = [x for x in current_branch.commits]
    db.commit()
    return new_branch
 
