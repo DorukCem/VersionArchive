@@ -10,6 +10,7 @@ export default function Branch({ branchName, setRepoNotFound }) {
   const [refresh, setRefresh] = useState(0);
   const [branchData, setBranchData] = useState(null);
   const [commits, setCommits] = useState([]);
+  const [selectedCommit, setSelectedCommit] = useState(null);
 
   useEffect(() => {
     async function fetchBranchContents() {
@@ -61,14 +62,22 @@ export default function Branch({ branchName, setRepoNotFound }) {
     setRefresh(refresh + 1);
   };
 
-  console.log(commits)
+  const handleCommitClick = (commit_oid) => {
+    setSelectedCommit(commit_oid);
+  };
+
+  function formatDateTime(dateTimeString) {
+    const dateTime = new Date(dateTimeString);
+    const options = { year: 'numeric', month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+    return dateTime.toLocaleDateString('en-US', options);
+  }
 
   return (
     <div className="App">
       {branchData && branchData.head_commit_oid ? (
         <Commit
           branchName={branchName}
-          commit_oid={branchData.head_commit_oid}
+          commit_oid={selectedCommit || branchData.head_commit_oid}
           setRepoNotFound={setRepoNotFound}
         />
       ) : (
@@ -76,9 +85,27 @@ export default function Branch({ branchName, setRepoNotFound }) {
       )}
 
       {!buttonPressed && (
-        <Protected>
-          <button onClick={createNewCommit}>Commit files</button>
-        </Protected>
+        <div>
+          <div>
+            <Protected>
+              <button onClick={createNewCommit}>Commit files</button>
+            </Protected>
+          </div>
+          <div>
+            <h2>Commits in {branchName}:</h2>
+            <ul>
+              {commits.map((commit, index) => (
+                <li
+                  key={index}
+                  onClick={() => handleCommitClick(commit.oid)}
+                  style={{ cursor: "pointer" }}
+                >
+                  {`Message: ${commit.commit_message}  |  Time: ${formatDateTime(commit.timestamp)}`}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
       )}
       {buttonPressed && (
         <Protected>
@@ -89,14 +116,6 @@ export default function Branch({ branchName, setRepoNotFound }) {
           />
         </Protected>
       )}
-
-      <h2>Commits in {branchName}:</h2>
-      <ul>
-        {commits.map((commit, ind) => (
-          <li key={ind}>{commit.commit_message}</li>
-        ))}
-      </ul>
-
     </div>
   );
 }

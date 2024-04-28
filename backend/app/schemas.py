@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from typing import List, Optional
+import datetime
 
 class User(BaseModel):
    username: str
@@ -29,6 +30,7 @@ class CommitOverviewResponseSchema(BaseModel):
    id: int
    oid: str
    commit_message: str
+   timestamp: datetime.datetime
    parent_oid: Optional[str] = None
 
 class BranchResponseSchema(BaseModel):

@@ -5,7 +5,6 @@ export default function Commit({ branchName, commit_oid, setRepoNotFound }) {
   const { username, repoName } = useParams();
   const [objects, setObjects] = useState([])
 
-  console.log(branchName)
 
   useEffect(() => {
     async function fetchCommitContents() {
