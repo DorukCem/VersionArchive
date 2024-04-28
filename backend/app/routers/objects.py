@@ -29,7 +29,7 @@ def get_diff_of_objects(obj_oid_1: str, obj_oid_2: str, db: Session = Depends(da
 def get_object(user_name:str, repository_name: str, object_oid : str, db: Session = Depends(database.get_db)):
    user = crud.get_one_or_error(db, models.User, name= user_name) 
    repository = crud.get_one_or_error(db, models.Repository, name= repository_name, creator_id= user.id)
-   object= crud.get_one_or_error(db, models.Object, oid = object_oid, repository_id= repository.id)
+   object= crud.get_one_or_error(db, models.Object, oid = object_oid)
 
    return object
    # The returned content has special chars such as \n and \r

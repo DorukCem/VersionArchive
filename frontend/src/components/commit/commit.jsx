@@ -5,8 +5,10 @@ export default function Commit({ branchName, commit_oid, setRepoNotFound }) {
   const { username, repoName } = useParams();
   const [objects, setObjects] = useState([])
 
+  console.log(branchName)
+
   useEffect(() => {
-    async function fetchRepoContents() {
+    async function fetchCommitContents() {
       try {
         const response = await fetch(
           `http://127.0.0.1:8000/commit/${username}/${repoName}/${branchName}/${commit_oid}/objects`
@@ -27,7 +29,7 @@ export default function Commit({ branchName, commit_oid, setRepoNotFound }) {
         setRepoNotFound(true);
       }
     }
-    fetchRepoContents();
+    fetchCommitContents();
   }, [repoName, branchName, commit_oid]);
 
   return (

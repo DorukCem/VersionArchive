@@ -33,7 +33,7 @@ export default function Branch({ branchName, setRepoNotFound }) {
       }
     }
     fetchBranchContents();
-  }, [repoName, branchName]);
+  }, [repoName, branchName, refresh]);
 
   const createNewCommit = () => {
     setButtonPressed(true);
@@ -45,7 +45,7 @@ export default function Branch({ branchName, setRepoNotFound }) {
 
   return (
     <div className="App">
-      {branchData && <Commit commit_oid={branchData.head_commit_oid} setRepoNotFound={setRepoNotFound}/>}
+      {branchData && branchData.head_commit_oid ? <Commit branchName={branchName} commit_oid={branchData.head_commit_oid} setRepoNotFound={setRepoNotFound}/> : <h1>This branch does not have a commit</h1>}
 
       {!buttonPressed && (
         <Protected>

@@ -35,7 +35,7 @@ def commit_files(user_name: str, repository_name: str, branch_name: str,
 
          obj_oid = utils.create_object_oid(contents)
          object = crud.create_or_get(db, models.Object, name=file.filename, 
-                                     blob=contents, oid= str(obj_oid), repository_id = repository.id)
+                                     blob=contents, oid= str(obj_oid))
          new_objects.append(object)
       
       # Create new commit object
@@ -45,9 +45,14 @@ def commit_files(user_name: str, repository_name: str, branch_name: str,
       commit_oid = utils.create_commit_oid(merged_objects)
       commit = crud.create_or_get(db, models.Commit, oid = commit_oid, commit_message=commit_message, 
                                   parent_oid = head_oid, repository_id = repository.id) 
-      for obj in merged_objects:
-         commit.objects.append(obj)
       
+      # Check if commit obj association done before
+      is_commit_in_db = crud.get_one_or_none(db, models.CommitObjectAssociation, commit_oid = commit_oid)
+      print(is_commit_in_db)
+      if is_commit_in_db==None:
+         for obj in merged_objects:
+            commit.objects.append(obj)
+
       # Move branch and head
       commit.parent_oid = branch.head_commit_oid
       branch.head_commit_oid = commit.oid

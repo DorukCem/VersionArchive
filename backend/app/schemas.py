@@ -17,7 +17,6 @@ class ObjectResponseSchema(BaseModel):
    oid: str
    name: str
    blob: bytes
-   repository_id: int
 
 class CommitResponseSchema(BaseModel):
    id: int

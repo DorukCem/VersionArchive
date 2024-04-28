@@ -20,16 +20,9 @@ class Object(Base):
    """
    __tablename__ = "objects"
    id = Column(Integer, primary_key= True, autoincrement= True)
-   oid = Column(String, nullable= False) 
+   oid = Column(String, unique=True, nullable= False) 
    name = Column(String)
    blob = Column(BLOB)
-
-   repository_id = Column(Integer, ForeignKey("repositories.id"), nullable= False)
-   repository = relationship("Repository", back_populates="objects")
-
-   __table_args__ = (
-      UniqueConstraint('oid', 'repository_id', name='unique_objects_per_repo'),
-   )
 
 class Commit(Base):
    __tablename__ = "commits"
@@ -43,10 +36,6 @@ class Commit(Base):
    repository_id = Column(Integer, ForeignKey("repositories.id"), nullable= False)
    repository = relationship("Repository", back_populates="commits")
    objects = relationship("Object", secondary="commit_object_association")
-
-   __table_args__ = (
-      UniqueConstraint('oid', 'repository_id', name='unique_objects_per_repo'),
-   )
 
 # Many to Many 
 class CommitObjectAssociation(Base):
@@ -82,7 +71,6 @@ class Repository(Base):
    creator_id = Column(Integer, ForeignKey('users.id'), nullable= False)
    creator = relationship("User", back_populates="repositories")
 
-   objects = relationship("Object", back_populates="repository")
    commits = relationship("Commit", back_populates="repository")
    branches = relationship("Branch", back_populates="repository", foreign_keys="Branch.repository_id")
 
