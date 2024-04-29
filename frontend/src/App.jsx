@@ -7,6 +7,7 @@ import UserProfile from "./pages/user/userpage";
 import Repository from "./pages/repository/repository";
 import VCObject from "./pages/vc-object";
 import Login from "./pages/login/login";
+import SignUp from "./pages/signup/signup";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/tutorial" element={<Tutorial />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<SignUp />} />
           <Route path="/:username" element={<UserProfile />} />
           <Route path="/:username/:repoName" element={<Repository />} />
           <Route

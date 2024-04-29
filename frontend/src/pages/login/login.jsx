@@ -1,11 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import axios from "axios";
-import { useState} from "react";
+import { NavLink } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
 
 function Login() {
   const { setAuth } = useAuth();
   const [formData, setFormData] = useState({ username: "", password: "" });
+  const [error, setError] = useState("");
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -23,42 +24,62 @@ function Login() {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      // Handle the response, e.g., store the token in local storage or context
-      console.log(response.data.access_token);
-      console.log(response.data.token_type);
       const access_token = response?.data?.access_token;
-      const username = formData.username
+      const username = formData.username;
       setAuth({ username, access_token });
-
     } catch (error) {
-      // Handle any errors
-      console.log(error);
+      if (error.response && error.response.status === 401) {
+        // Password is wrong
+        setError("Password or username is wrong");
+      } else {
+        // Handle other errors
+        console.error(error);
+      }
     }
+  };
+
+  const onLogout = () => {
+    // Clear the authentication state
+    setAuth({});
   };
 
   const { auth } = useAuth();
   if (auth?.username) {
-    return <div>
-      <h1>User {auth.username} logged in</h1>
-    </div>
+    return (
+      <div>
+        <h1>User {auth.username} logged in</h1>
+        <button onClick={onLogout}>Logout</button>
+      </div>
+    );
   }
 
   return (
-    <form onSubmit={onSubmit}>
-      <input
-        type="text"
-        onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-        placeholder="Username"
-        value={formData.username}
-      />
-      <input
-        type="password"
-        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-        placeholder="Password"
-        value={formData.password}
-      />
-      <button type="submit">Submit</button>
-    </form>
+    <div>
+      <h1>Login</h1>
+      {error && <p style={{ color: "red" }}>{error}</p>}
+      <form onSubmit={onSubmit}>
+        <input
+          type="text"
+          onChange={(e) =>
+            setFormData({ ...formData, username: e.target.value })
+          }
+          placeholder="Username"
+          value={formData.username}
+        />
+        <input
+          type="password"
+          onChange={(e) =>
+            setFormData({ ...formData, password: e.target.value })
+          }
+          placeholder="Password"
+          value={formData.password}
+        />
+        <button type="submit">Submit</button>
+      </form>
+      <p>
+        Don't have an account? <NavLink to="/signup">Sign Up</NavLink>
+      </p>
+    </div>
   );
 }
 
