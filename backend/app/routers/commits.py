@@ -39,23 +39,23 @@ def commit_files(user_name: str, repository_name: str, branch_name: str,
          new_objects.append(object)
       
       # Create new commit object
-      head_oid = branch.head_commit_oid
-      old_objects =  db.query(models.Commit).filter_by(oid=head_oid).first().objects if head_oid else []
+      head_id = branch.head_commit_id
+      old_objects =  db.query(models.Commit).filter_by(id=head_id).first().objects if head_id else []
       merged_objects = utils.merge_old_and_new_objects(old_objects, new_objects)
       commit_oid = utils.create_commit_oid(merged_objects)
       commit = crud.create_or_get(db, models.Commit, oid = commit_oid, commit_message=commit_message, 
-                                  parent_oid = head_oid, repository_id = repository.id) 
+                                  parent_id = head_id, repository_id = repository.id) 
       
       # Check if commit obj association done before
       is_commit_in_db = crud.get_one_or_none(db, models.CommitObjectAssociation, commit_oid = commit_oid)
-      print(is_commit_in_db)
       if is_commit_in_db==None:
          for obj in merged_objects:
             commit.objects.append(obj)
-
+      
+      db.flush()
       # Move branch and head
-      commit.parent_oid = branch.head_commit_oid
-      branch.head_commit_oid = commit.oid
+      commit.parent_id = branch.head_commit_id
+      branch.head_commit_id = commit.id
 
       db.commit()
 
@@ -67,12 +67,12 @@ def commit_files(user_name: str, repository_name: str, branch_name: str,
 
    return {"message": f"Successfuly uploaded {[file.filename for file in files]}"}
 
-@router.get("/{commit_oid}/objects", response_model=List[schemas.ObjectResponseSchema], status_code=status.HTTP_200_OK)
-def get_all_objects_for_commit(commit_oid : str, repository_name: str, user_name: str, 
+@router.get("/{commit_id}/objects", response_model=List[schemas.ObjectResponseSchema], status_code=status.HTTP_200_OK)
+def get_all_objects_for_commit(commit_id : int, repository_name: str, user_name: str, 
                                db: Session = Depends(database.get_db)):
    user = crud.get_one_or_error(db, models.User, name= user_name) 
    repository = crud.get_one_or_error(db, models.Repository, name= repository_name, creator_id= user.id)
-   commit = crud.get_one_or_error(db, models.Commit, oid= commit_oid, repository_id= repository.id)
+   commit = crud.get_one_or_error(db, models.Commit, id= commit_id, repository_id= repository.id)
    return commit.objects
 
 @router.get("/all", response_model=List[schemas.CommitOverviewResponseSchema], status_code=status.HTTP_200_OK)

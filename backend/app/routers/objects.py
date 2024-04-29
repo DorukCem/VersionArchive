@@ -10,7 +10,7 @@ def get_all_for_branch_head(user_name: str, repository_name : str, branch_name:s
    user = crud.get_one_or_error(db, models.User, name= user_name) 
    repository = crud.get_one_or_error(db, models.Repository, name= repository_name, creator_id= user.id)
    branch = crud.get_one_or_error(db, models.Branch, name= branch_name, repository_id = repository.id  )
-   head_commit = crud.get_one_or_none(db, models.Commit, oid= branch.head_commit_oid, repository_id= repository.id)
+   head_commit = crud.get_one_or_none(db, models.Commit, id= branch.head_commit_id, repository_id= repository.id)
    if head_commit:
       return head_commit.objects
    else:

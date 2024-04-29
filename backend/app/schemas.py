@@ -23,7 +23,7 @@ class CommitResponseSchema(BaseModel):
    id: int
    oid: str
    commit_message: str
-   parent_oid: Optional[str] = None
+   parent_id: Optional[int] = None
    objects: List[ObjectResponseSchema] = []
 
 class CommitOverviewResponseSchema(BaseModel):
@@ -31,12 +31,12 @@ class CommitOverviewResponseSchema(BaseModel):
    oid: str
    commit_message: str
    timestamp: datetime.datetime
-   parent_oid: Optional[str] = None
+   parent_id: Optional[int] = None
 
 class BranchResponseSchema(BaseModel):
    id: int
    name: str
-   head_commit_oid: Optional[str] = None
+   head_commit_id: Optional[int] = None
    repository_id: int
    commits: List[CommitOverviewResponseSchema] = []
 

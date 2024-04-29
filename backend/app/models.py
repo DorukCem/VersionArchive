@@ -31,7 +31,7 @@ class Commit(Base):
    commit_message = Column(String)
    timestamp = Column(DateTime(timezone= True), server_default=func.now())
    # Oid of the commit before this commit
-   parent_oid = Column(String, nullable= True)
+   parent_id = Column(Integer, nullable= True)
 
    repository_id = Column(Integer, ForeignKey("repositories.id"), nullable= False)
    repository = relationship("Repository", back_populates="commits")
@@ -54,7 +54,7 @@ class Branch(Base):
             ↓                     ↑
             o ← dev_branch    master_branch 
    """
-   head_commit_oid = Column(String, ForeignKey("commits.oid"))
+   head_commit_id = Column(Integer, ForeignKey("commits.id"))
    
    repository_id = Column(Integer, ForeignKey("repositories.id"))
    repository = relationship("Repository", back_populates="branches", foreign_keys=[repository_id])

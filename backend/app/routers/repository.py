@@ -13,7 +13,7 @@ def create_repo(repository_name : str, user_name: str,
    
    user = crud.get_one_or_error(db, models.User, name= user_name)
    repo = crud.create_unique_or_error(db, models.Repository, name= repository_name, creator= user)
-   master_branch = crud.create_unique_or_error(db, models.Branch, name= "master", head_commit_oid = None, repository_id= repo.id)
+   master_branch = crud.create_unique_or_error(db, models.Branch, name= "master", head_commit_id = None, repository_id= repo.id)
 
    repo.branches.append(master_branch)
    db.commit()

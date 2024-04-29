@@ -67,8 +67,8 @@ export default function Branch({ branchName, setRepoNotFound }) {
     setShowCommits(!showCommits);
   };
 
-  const handleCommitClick = (commit_oid) => {
-    setSelectedCommit(commit_oid);
+  const handleCommitClick = (commit_id) => {
+    setSelectedCommit(commit_id);
   };
 
   function formatDateTime(dateTimeString) {
@@ -87,16 +87,16 @@ export default function Branch({ branchName, setRepoNotFound }) {
   // Some things can only be done on head commit and others only on previous commits such as reset()
   function is_head_commit() {
     return (
-      selectedCommit === null || selectedCommit === branchData.head_commit_oid
+      selectedCommit === null || selectedCommit === branchData.head_commit_id
     );
   }
 
   return (
     <div className="App">
-      {branchData && branchData.head_commit_oid ? (
+      {branchData && branchData.head_commit_id ? (
         <Commit
           branchName={branchName}
-          commit_oid={selectedCommit || branchData.head_commit_oid}
+          commit_id={selectedCommit || branchData.head_commit_id}
           setRepoNotFound={setRepoNotFound}
         />
       ) : (
@@ -126,9 +126,9 @@ export default function Branch({ branchName, setRepoNotFound }) {
                 {commits.map((commit, index) => (
                   <li
                     key={index}
-                    onClick={() => handleCommitClick(commit.oid)}
+                    onClick={() => handleCommitClick(commit.id)}
                     className={
-                      commit.oid === selectedCommit ? "selected-commit" : ""
+                      commit.id === selectedCommit ? "selected-commit" : ""
                     }
                     style={{ cursor: "pointer" }}
                   >

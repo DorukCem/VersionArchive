@@ -13,7 +13,7 @@ def create_branch(user_name: str, repository_name : str, branch_data:schemas.Bra
    repo = crud.get_one_or_error(db, models.Repository, name = repository_name, creator_id= user.id)
    current_branch = crud.get_one_or_error(db, models.Branch, name = branch_data.old_branch_name, repository_id=repo.id)
    new_branch = crud.create_unique_or_error(db, models.Branch, name= branch_data.new_branch_name, 
-                                 repository_id= repo.id, head_commit_oid= current_branch.head_commit_oid)
+                                 repository_id= repo.id, head_commit_id= current_branch.head_commit_id)
    db.commit()
    return new_branch
 
@@ -34,14 +34,14 @@ def get_branch_commits(user_name: str, repository_name : str, branch_name:str,
    user = crud.get_one_or_error(db, models.User, name= user_name) 
    repo = crud.get_one_or_error(db, models.Repository, name = repository_name, creator_id= user.id)
    current_branch = crud.get_one_or_error(db, models.Branch, name = branch_name, repository_id=repo.id)
-   head = current_branch.head_commit_oid
+   head = current_branch.head_commit_id
    commits_in_repo = crud.get_many(db, models.Commit, repository_id= repo.id)
-   commits_in_repo = {c.oid: c for c in commits_in_repo}
+   commits_in_repo = {c.id: c for c in commits_in_repo}
    commits_in_branch = []
    while(head):
       commit = commits_in_repo[head]
       commits_in_branch.append(commit)
-      head = commit.parent_oid
+      head = commit.parent_id 
    return commits_in_branch
    
    
@@ -59,6 +59,6 @@ def reset_branch_to_previous_commit(repository_name : str, user_name: str, branc
    commit = crud.get_one_or_error(db, models.Commit, oid= commit_oid)
    branch = crud.get_one_or_error(db, models.Branch, repository_id = repo.id, name= branch_name)
 
-   branch.head_commit_oid = commit.oid
+   branch.head_commit_id = commit.id
    db.commit()
    return branch

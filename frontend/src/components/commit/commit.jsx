@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, NavLink } from "react-router-dom";
 
-export default function Commit({ branchName, commit_oid, setRepoNotFound }) {
+export default function Commit({ branchName, commit_id, setRepoNotFound }) {
   const { username, repoName } = useParams();
   const [objects, setObjects] = useState([])
 
@@ -10,7 +10,7 @@ export default function Commit({ branchName, commit_oid, setRepoNotFound }) {
     async function fetchCommitContents() {
       try {
         const response = await fetch(
-          `http://127.0.0.1:8000/commit/${username}/${repoName}/${branchName}/${commit_oid}/objects`
+          `http://127.0.0.1:8000/commit/${username}/${repoName}/${branchName}/${commit_id}/objects`
         );
         if (!response.ok) {
           if (response.status === 404) {
@@ -29,14 +29,14 @@ export default function Commit({ branchName, commit_oid, setRepoNotFound }) {
       }
     }
     fetchCommitContents();
-  }, [repoName, branchName, commit_oid]);
+  }, [repoName, branchName, commit_id]);
 
   return (
     <div>
       {objects.length > 0 ? (
         <div>
           <h3>
-            {repoName} {branchName} commit: {commit_oid} contents
+            {repoName} {branchName} commit_id: {commit_id} contents
           </h3>
           <ul>
             {objects.map((obj) => (
