@@ -91,6 +91,26 @@ export default function Branch({ branchName, setRepoNotFound }) {
     );
   }
 
+  async function handleReset() {
+    try {
+      const response = await fetch(
+        `http://127.0.0.1:8000/branch/${username}/${repoName}/${branchName}/reset/${selectedCommit}`,
+        {
+          method: 'PUT',
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Failed to reset branch");
+      } else {
+        // Handle successful reset
+        refreshRepos()
+      }
+    } catch (error) {
+      console.error(error);
+      // Handle error (e.g., display an error message)
+    }
+  }
+
   return (
     <div className="App">
       {branchData && branchData.head_commit_id ? (
@@ -135,6 +155,17 @@ export default function Branch({ branchName, setRepoNotFound }) {
                     {`Message: ${
                       commit.commit_message
                     }  |  Time: ${formatDateTime(commit.timestamp)}`}
+
+                    {commit.id === selectedCommit && !is_head_commit() && (
+                      <Protected>
+                        <button
+                          onClick={handleReset}
+                          style={{ marginLeft: "1rem" }}
+                        >
+                          Reset branch to this commit
+                        </button>
+                      </Protected>
+                    )}
                   </li>
                 ))}
               </ul>

@@ -45,10 +45,10 @@ def get_branch_commits(user_name: str, repository_name : str, branch_name:str,
    return commits_in_branch
    
    
-@router.put("/{branch_name}/reset/{commit_oid}", 
+@router.put("/{branch_name}/reset/{commit_id}", 
             response_model= schemas.BranchResponseSchema, status_code=status.HTTP_200_OK )
 def reset_branch_to_previous_commit(repository_name : str, user_name: str, branch_name: str, 
-                                    commit_oid: str, db: Session = Depends(database.get_db)):
+                                    commit_id: int, db: Session = Depends(database.get_db)):
    """ reset the state of branch to a previous commit by moving the branch head reference
      c1 → c2 → c3 → c4 → c5
                          ↑
@@ -56,7 +56,7 @@ def reset_branch_to_previous_commit(repository_name : str, user_name: str, branc
    """
    user = crud.get_one_or_error(db, models.User, name= user_name) 
    repo = crud.get_one_or_error(db, models.Repository, name = repository_name, creator_id= user.id)
-   commit = crud.get_one_or_error(db, models.Commit, oid= commit_oid)
+   commit = crud.get_one_or_error(db, models.Commit, id= commit_id)
    branch = crud.get_one_or_error(db, models.Branch, repository_id = repo.id, name= branch_name)
 
    branch.head_commit_id = commit.id
