@@ -5,12 +5,10 @@ import { useNavigate } from "react-router-dom";
 import "./user.css";
 import NewRepo from "../../components/newrepo/NewRepo";
 import Protected from "../../components/protected/protected";
+import useAuth from "../../hooks/useAuth";
 
 const navLinkStyle = {
   textDecoration: "none",
-  fontSize: "1.3rem",
-  fontWeight: 600,
-  color: "#fff",
 };
 
 export default function UserProfile() {
@@ -67,18 +65,27 @@ export default function UserProfile() {
     );
   }
 
+  const { auth } = useAuth();
+
   return (
     <div>
-      <h1>{username}'s Repositories</h1>
-      <Protected>
-        <button onClick={handleCreateRepo}>Create a new Repository</button>
-      </Protected>
-      <div className="container">
+      <h1 className="title">
+        {auth?.username ? "My Repositories" : `${username}'s Repositories`}
+      </h1>
+      <div className="list-container">
+        <div className="button-container">
+          <Protected>
+            <button className="create-repo-button" onClick={handleCreateRepo}>
+              Create a new Repository
+            </button>
+          </Protected>
+        </div>
+
         <ul>
           {repos.map((reponame, id) => (
             <li className="list-item" key={id}>
               <NavLink style={navLinkStyle} to={`${reponame}`}>
-                {reponame}
+                <span className="li-text">{reponame}</span>
               </NavLink>
             </li>
           ))}
