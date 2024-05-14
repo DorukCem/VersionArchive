@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { NavLink } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
+import "./loginpage.css";
 
 function Login() {
   const { setAuth } = useAuth();
@@ -54,11 +55,10 @@ function Login() {
   }
 
   return (
-    <div>
-      <h1>Login</h1>
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      <form onSubmit={onSubmit}>
+    <div classname="login-container">
+      <form onSubmit={onSubmit} className="form">
         <input
+          className="login-input"
           type="text"
           onChange={(e) =>
             setFormData({ ...formData, username: e.target.value })
@@ -74,11 +74,12 @@ function Login() {
           placeholder="Password"
           value={formData.password}
         />
-        <button type="submit">Submit</button>
+        <button type="submit">login</button>
+        <p className="message">
+          Don't have an account? <NavLink to="/signup">Sign Up</NavLink>
+        </p>
       </form>
-      <p>
-        Don't have an account? <NavLink to="/signup">Sign Up</NavLink>
-      </p>
+      {error && <p className="error" style={{ color: "red" }}>{error}</p>}
     </div>
   );
 }
