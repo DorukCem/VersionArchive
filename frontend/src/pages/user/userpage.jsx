@@ -81,7 +81,7 @@ export default function UserProfile() {
           </Protected>
         </div>
 
-        <ul>
+        <ul className="list">
           {repos.map((reponame, id) => (
             <li className="list-item" key={id}>
               <NavLink style={navLinkStyle} to={`${reponame}`}>

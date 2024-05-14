@@ -1,11 +1,13 @@
 .list-container{
-  margin-top: 50px;
-  width: 50%;
-  margin-left: auto;
-  margin-right: auto;
+  width: 500px;
   padding: 0;
+  margin: auto;
   list-style-type: none;
   border: 1px solid black;
+}
+
+.list {
+  padding-left: 0;
 }
 
 .list-item {
@@ -18,7 +20,7 @@
   background: #ada6a667;
   border-radius: 5px;
   border: 1px solid black;
-  width: 40%; 
+  width: 80%; 
   margin-left: auto;
   margin-right: auto;
 }

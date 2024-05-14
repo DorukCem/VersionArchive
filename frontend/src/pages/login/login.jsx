@@ -47,18 +47,19 @@ function Login() {
   const { auth } = useAuth();
   if (auth?.username) {
     return (
-      <div>
-        <h1>User {auth.username} logged in</h1>
-        <button onClick={onLogout}>Logout</button>
+      <div className="login-container">
+        <div className="login-form">
+          <h1>User {auth.username} logged in</h1>
+          <button onClick={onLogout}>Logout</button>
+        </div>
       </div>
     );
   }
 
   return (
-    <div classname="login-container">
-      <form onSubmit={onSubmit} className="form">
+    <div className="login-container">
+      <form onSubmit={onSubmit} className="login-form">
         <input
-          className="login-input"
           type="text"
           onChange={(e) =>
             setFormData({ ...formData, username: e.target.value })
@@ -79,7 +80,11 @@ function Login() {
           Don't have an account? <NavLink to="/signup">Sign Up</NavLink>
         </p>
       </form>
-      {error && <p className="error" style={{ color: "red" }}>{error}</p>}
+      {error && (
+        <p className="error" style={{ color: "red" }}>
+          {error}
+        </p>
+      )}
     </div>
   );
 }
