@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
+import "./newrepopage.css";
 
 export default function NewRepo({ setButtonPressed, username, refreshRepos }) {
   const [repoName, setRepoName] = useState('');
@@ -40,16 +41,19 @@ export default function NewRepo({ setButtonPressed, username, refreshRepos }) {
     setButtonPressed(false);
   };
 
-  return (
-    <div>
-      <input
+  return (  
+    <div className="container">
+      <p>Enter a name for you Repository</p>
+      <input className="input-bar"
         type="text"
         placeholder="Repository-Name"
         value={repoName}
         onChange={(e) => setRepoName(e.target.value)}
       />
-      <button onClick={handleSubmitRepo}>Submit</button>
-      <button onClick={handleCancel}>Cancel</button>
+      <div className="button-container">
+        <button className="but" onClick={handleSubmitRepo}>Submit</button>
+        <button className="but" onClick={handleCancel}>Cancel</button>
+      </div>
       <p>{error}</p>
     </div>
   );
