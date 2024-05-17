@@ -1,0 +1,19 @@
+.repo-container{
+  width: 800px;
+  margin: 16px auto;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid black;
+  box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
+}
+
+.select-branch{
+  text-align: center;
+}
+
+.edit-branch{
+  display: flex;
+  flex-direction: column;
+  width: 400px;
+  margin: auto;
+}

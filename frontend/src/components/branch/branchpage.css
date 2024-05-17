@@ -1,0 +1,11 @@
+.branch-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.commit-button,
+.prev-commits-button {
+  width: 100%;
+  padding: 8px;
+  cursor: pointer;
+}

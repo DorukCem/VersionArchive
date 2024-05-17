@@ -1,10 +1,15 @@
 import { useState, useEffect } from "react";
 import { useParams, NavLink } from "react-router-dom";
+import "./commitpage.css"
 
 export default function Commit({ branchName, commit_id, setRepoNotFound }) {
   const { username, repoName } = useParams();
   const [objects, setObjects] = useState([])
-
+  const navLinkStyle = {
+    textDecoration: "none",
+    color: "black",
+  };
+  
 
   useEffect(() => {
     async function fetchCommitContents() {
@@ -32,16 +37,16 @@ export default function Commit({ branchName, commit_id, setRepoNotFound }) {
   }, [repoName, branchName, commit_id]);
 
   return (
-    <div>
+    <div className="commit-container">
       {objects.length > 0 ? (
         <div>
           <h3>
-            {repoName} {branchName} commit_id: {commit_id} contents
+            Commit id: {commit_id} contents
           </h3>
-          <ul>
+          <ul className="commit-list">
             {objects.map((obj) => (
-              <li key={obj.id}>
-                <NavLink to={`object/${obj.oid}`}>{obj.name}</NavLink>
+              <li className="commit-list-item" key={obj.id}>
+                <span className="commit-li-text"><NavLink style={navLinkStyle} to={`object/${obj.oid}`}>{obj.name}</NavLink></span>
               </li>
             ))}
           </ul>

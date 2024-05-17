@@ -3,6 +3,7 @@ import { NavLink, useParams } from "react-router-dom";
 import Protected from "../../components/protected/protected";
 import NewCommit from "../../components/newcommit/newCommit";
 import Commit from "../commit/commit";
+import "./branchpage.css"
 
 export default function Branch({ branchName, setRepoNotFound }) {
   const { username, repoName } = useParams();
@@ -112,7 +113,7 @@ export default function Branch({ branchName, setRepoNotFound }) {
   }
 
   return (
-    <div className="App">
+    <div className="branch-container">
       {branchData && branchData.head_commit_id ? (
         <Commit
           branchName={branchName}
@@ -128,13 +129,13 @@ export default function Branch({ branchName, setRepoNotFound }) {
           {is_head_commit() && (
             <div>
               <Protected>
-                <button onClick={createNewCommit}>Commit files</button>
+                <button className="commit-button" onClick={createNewCommit}>Commit files</button>
               </Protected>
             </div>
           )}
 
           <div>
-            <button onClick={toggleShowCommits}>
+            <button className="prev-commits-button" onClick={toggleShowCommits}>
               {showCommits ? "Hide previous commits" : "View previous commits"}
             </button>
           </div>

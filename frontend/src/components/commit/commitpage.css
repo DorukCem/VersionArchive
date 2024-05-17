@@ -1,0 +1,29 @@
+.commit-container{
+  display: flex;
+  flex-direction: column;
+}
+
+.commit-list{
+  padding-left: 0;
+  list-style-type: none;
+}
+
+.commit-list-item{
+  display: flex;
+  justify-content: flex-start; 
+  padding: 6px 20px;
+  border-top: 1px solid black;
+  border-bottom: 1px solid black;
+}
+
+.commit-li-text {
+  color: black;
+  font-size: large;
+  font-weight: 500;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  cursor: pointer;
+}
+
+.commit-li-text:hover{
+  text-decoration: underline;
+}
