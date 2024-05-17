@@ -1,9 +1,17 @@
+.user-container{
+  width: 800px;
+  margin: 16px auto;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid black;
+  box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
+}
+
 .list-container{
-  width: 500px;
+  width: 100% ;
   padding: 0;
   margin: auto;
   list-style-type: none;
-  border: 1px solid black;
 }
 
 .list {
@@ -14,15 +22,11 @@
   display: flex;
   justify-content: center; 
   text-align: center;
-  cursor: pointer;
   padding: 1em;
   margin: 0.5em;
   background: #ada6a667;
   border-radius: 5px;
   border: 1px solid black;
-  width: 80%; 
-  margin-left: auto;
-  margin-right: auto;
 }
 
 .li-text {
@@ -30,6 +34,7 @@
   font-size: 20px;
   font-weight: 500;
   font-family: Georgia, 'Times New Roman', Times, serif;
+  cursor: pointer;
 }
 
 .li-text:hover {
@@ -37,9 +42,8 @@
 }
 
 .button-container {
-  position: relative;
   padding: 16px;
-
+  margin-left: auto;
 }
 
 .create-repo-button {
@@ -48,11 +52,7 @@
   color: white;
   border: none;
   cursor: pointer;
-  position:absolute;
-  top: 0;
-  right: 0;
-  font-size: 1.2em;
-  max-width: 150px;
+  font-size: small;
   transition-duration: 50ms;
 }
 

@@ -68,11 +68,10 @@ export default function UserProfile() {
   const { auth } = useAuth();
 
   return (
-    <div>
+    <div className="user-container">
       <h1 className="title">
         {auth?.username ? "My Repositories" : `${username}'s Repositories`}
       </h1>
-      <div className="list-container">
         <div className="button-container">
           <Protected>
             <button className="create-repo-button" onClick={handleCreateRepo}>
@@ -80,7 +79,7 @@ export default function UserProfile() {
             </button>
           </Protected>
         </div>
-
+      <div className="list-container">
         <ul className="list">
           {repos.map((reponame, id) => (
             <li className="list-item" key={id}>
