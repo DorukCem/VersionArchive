@@ -46,6 +46,7 @@ export default function Commit({ branchName, commit_id, setRepoNotFound }) {
           <ul className="commit-list">
             {objects.map((obj) => (
               <li className="commit-list-item" key={obj.id}>
+                <i class="bi bi-file-earmark"></i>
                 <span className="commit-li-text"><NavLink style={navLinkStyle} to={`object/${obj.oid}`}>{obj.name}</NavLink></span>
               </li>
             ))}

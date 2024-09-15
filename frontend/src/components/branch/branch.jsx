@@ -3,7 +3,7 @@ import { NavLink, useParams } from "react-router-dom";
 import Protected from "../../components/protected/protected";
 import NewCommit from "../../components/newcommit/newCommit";
 import Commit from "../commit/commit";
-import "./branchpage.css"
+import "./branchpage.css";
 
 export default function Branch({ branchName, setRepoNotFound }) {
   const { username, repoName } = useParams();
@@ -97,14 +97,14 @@ export default function Branch({ branchName, setRepoNotFound }) {
       const response = await fetch(
         `http://127.0.0.1:8000/branch/${username}/${repoName}/${branchName}/reset/${selectedCommit}`,
         {
-          method: 'PUT',
+          method: "PUT",
         }
       );
       if (!response.ok) {
         throw new Error("Failed to reset branch");
       } else {
         // Handle successful reset
-        refreshRepos()
+        refreshRepos();
       }
     } catch (error) {
       console.error(error);
@@ -126,18 +126,27 @@ export default function Branch({ branchName, setRepoNotFound }) {
 
       {!buttonPressed && (
         <div>
-          {is_head_commit() && (
+          <div className="buttons">
             <div>
-              <Protected>
-                <button className="commit-button" onClick={createNewCommit}>Commit files</button>
-              </Protected>
+              <button
+                className="prev-commits-button"
+                onClick={toggleShowCommits}
+              >
+                {showCommits
+                  ? "Hide previous commits"
+                  : "View previous commits"}
+              </button>
             </div>
-          )}
 
-          <div>
-            <button className="prev-commits-button" onClick={toggleShowCommits}>
-              {showCommits ? "Hide previous commits" : "View previous commits"}
-            </button>
+            {is_head_commit() && (
+              <div>
+                <Protected>
+                  <button className="commit-button" onClick={createNewCommit}>
+                    Commit new files
+                  </button>
+                </Protected>
+              </div>
+            )}
           </div>
 
           {showCommits && (

@@ -10,10 +10,8 @@
 
 .commit-list-item{
   display: flex;
-  justify-content: flex-start; 
-  padding: 6px 20px;
-  border-top: 1px solid black;
-  border-bottom: 1px solid black;
+  padding: 1em;
+  align-items: center;
 }
 
 .commit-li-text {
@@ -27,3 +25,9 @@
 .commit-li-text:hover{
   text-decoration: underline;
 }
+
+.bi-file-earmark {
+  color: black;
+  margin-right: 10px;
+  font-size: x-large;
+} 

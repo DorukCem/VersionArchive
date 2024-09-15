@@ -5,7 +5,14 @@
 
 .commit-button,
 .prev-commits-button {
-  width: 100%;
+  max-width: 6vw;
+  min-width: 100px;
+  height: 100%;
   padding: 8px;
   cursor: pointer;
+  font-size: medium;
+}
+
+.buttons{
+  display: flex;
 }
