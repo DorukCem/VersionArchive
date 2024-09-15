@@ -7,9 +7,6 @@ import NewRepo from "../../components/newrepo/NewRepo";
 import Protected from "../../components/protected/protected";
 import useAuth from "../../hooks/useAuth";
 
-const navLinkStyle = {
-  textDecoration: "none",
-};
 
 export default function UserProfile() {
   const [repos, setRepos] = useState([]);
@@ -17,6 +14,8 @@ export default function UserProfile() {
   const { username } = useParams();
   const [buttonPressed, setButtonPressed] = useState(false);
   const [refresh, setRefresh] = useState(0);
+
+  const navigate = useNavigate()
 
   useEffect(() => {
     async function fetchUserRepos() {
@@ -68,27 +67,30 @@ export default function UserProfile() {
   const { auth } = useAuth();
 
   return (
-    <div className="user-container">
-      <h1 className="title">
-        {auth?.username ? "My Repositories" : `${username}'s Repositories`}
-      </h1>
-        <div className="button-container">
-          <Protected>
-            <button className="create-repo-button" onClick={handleCreateRepo}>
-              Create a new Repository
-            </button>
-          </Protected>
+    <div className="page-container">
+      <div className="user-container">
+        <div className="header">
+          <h1 className="title">
+            {auth?.username ? "My Repositories" : `User ${username}'s Repositories`}
+          </h1>
+          <div className="button-container">
+            <Protected>
+              <button className="create-repo-button" onClick={handleCreateRepo}>
+                Create New
+              </button>
+            </Protected>
+          </div>
         </div>
-      <div className="list-container">
-        <ul className="list">
-          {repos.map((reponame, id) => (
-            <li className="list-item" key={id}>
-              <NavLink style={navLinkStyle} to={`${reponame}`}>
-                <span className="li-text">{reponame}</span>
-              </NavLink>
-            </li>
-          ))}
-        </ul>
+        <div className="list-container">
+          <ul className="list">
+            {repos.map((reponame, id) => (
+              <li className="list-item" key={id} onClick={() => navigate(`${reponame}`)}>
+                  <i className="bi bi-folder-fill"></i>
+                  <span className="li-text">{reponame}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </div>
   );

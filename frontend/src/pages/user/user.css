@@ -1,10 +1,25 @@
+
 .user-container{
-  width: 800px;
-  margin: 16px auto;
+  width: 80%;
+  margin: auto;
   display: flex;
   flex-direction: column;
   border: 1px solid black;
-  box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
+  border-width: 0 0 1px 0;
+}
+
+.page-container {
+  height: 40vh;
+  display: flex;
+  align-items: center;
+}
+
+.header {
+  display:  flex;
+  justify-content: center;
+  padding: 16px;
+  border: 1px solid black;
+  border-width: 0 0 1px 0;
 }
 
 .list-container{
@@ -20,25 +35,22 @@
 
 .list-item {
   display: flex;
-  justify-content: center; 
-  text-align: center;
   padding: 1em;
-  margin: 0.5em;
-  background: #ada6a667;
   border-radius: 5px;
-  border: 1px solid black;
 }
 
 .li-text {
   color: black;
-  font-size: 20px;
+  font-size: large;
   font-weight: 500;
   font-family: Georgia, 'Times New Roman', Times, serif;
-  cursor: pointer;
 }
 
-.li-text:hover {
+.list-item:hover {
+  cursor: pointer;
   text-decoration: underline;
+  background-color: aliceblue;
+  transition: 0.2s;
 }
 
 .button-container {
@@ -52,10 +64,16 @@
   color: white;
   border: none;
   cursor: pointer;
-  font-size: small;
+  font-size: medium;
   transition-duration: 50ms;
 }
 
 .create-repo-button:hover {
   background-color: rgba(0, 128, 0, 0.8)
+}
+
+.bi-folder-fill{
+  color: black;
+  margin-right: 10px;
+  font-size: x-large;
 }
