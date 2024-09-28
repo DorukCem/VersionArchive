@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { NavLink, useParams } from "react-router-dom";
 import Protected from "../../components/protected/protected";
-import NewCommit from "../../components/newcommit/newCommit";
+import NewCommit from "../../components/newcommit/NewCommit";
 import Commit from "../commit/commit";
 import "./branchpage.css";
 

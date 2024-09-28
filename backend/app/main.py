@@ -4,7 +4,7 @@ from . import models
 from .routers import repository, objects, commits, branch, authentication, users
 from fastapi.middleware.cors import CORSMiddleware
 
-# uvicorn backend.app.main:app --reload
+# python3 -m uvicorn backend.app.main:app --reload
 
 # * We are currently ignoring folders and only taking in files
 
