@@ -1,4 +1,4 @@
-.repo-container{
+.repo-container {
   width: 80%;
   margin: 16px auto;
   display: flex;
@@ -7,13 +7,31 @@
   box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
 }
 
-.select-branch{
+.select-branch,
+.create-branch {
   text-align: center;
+  flex: 1 0;
+  padding: 5px 10px;
+  font-size: large;
 }
 
-.edit-branch{
+.edit-branch {
   display: flex;
-  flex-direction: column;
-  width: 400px;
-  margin: auto;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.repo-title{
+  display: flex;
+  align-items: center;
+  font-size: large;
+}
+
+.bi-folder-fill{
+  color: black;
+  margin-right: 10px;
+  font-size: x-large;
 }

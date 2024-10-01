@@ -12,9 +12,7 @@ pip install -r backend/requirements.txt
 ```
 Download the required npm packages
 ```bash
-cd frontend
-npm install
-cd ..
+npm install --prefix frontend
 ```
 
 #### Run the project
@@ -24,6 +22,5 @@ python3 -m uvicorn backend.app.main:app --reload
 ```
 In a different terminal run the frontend
 ```bash
-cd frontend
-npm run dev
+npm run dev --prefix frontend
 ```

@@ -121,7 +121,7 @@ export default function Branch({ branchName, setRepoNotFound }) {
           setRepoNotFound={setRepoNotFound}
         />
       ) : (
-        <h1>This branch does not have a commit</h1>
+        <span className="placeholder">This branch does not have a commit</span>
       )}
 
       {!buttonPressed && (

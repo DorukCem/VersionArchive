@@ -29,6 +29,10 @@
   list-style-type: none;
 }
 
+.placeholder-text{
+  padding: 10px;
+}
+
 .list {
   padding-left: 0;
 }

@@ -16,3 +16,8 @@
 .buttons{
   display: flex;
 }
+
+.placeholder {
+  padding-top: 20px;
+  padding-bottom: 20px;
+}

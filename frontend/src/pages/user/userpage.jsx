@@ -7,7 +7,6 @@ import NewRepo from "../../components/newrepo/NewRepo";
 import Protected from "../../components/protected/protected";
 import useAuth from "../../hooks/useAuth";
 
-
 export default function UserProfile() {
   const [repos, setRepos] = useState([]);
   const [userNotFound, setUserNotFound] = useState(false);
@@ -15,7 +14,7 @@ export default function UserProfile() {
   const [buttonPressed, setButtonPressed] = useState(false);
   const [refresh, setRefresh] = useState(0);
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function fetchUserRepos() {
@@ -71,7 +70,9 @@ export default function UserProfile() {
       <div className="user-container">
         <div className="header">
           <h1 className="title">
-            {auth?.username ? "My Repositories" : `User ${username}'s Repositories`}
+            {auth?.username
+              ? "My Repositories"
+              : `User ${username}'s Repositories`}
           </h1>
           <div className="button-container">
             <Protected>
@@ -82,14 +83,24 @@ export default function UserProfile() {
           </div>
         </div>
         <div className="list-container">
-          <ul className="list">
-            {repos.map((reponame, id) => (
-              <li className="list-item" key={id} onClick={() => navigate(`${reponame}`)}>
+          {repos.length == 0 ? (
+            <div className="placeholder-text">
+              <span>You do not have any repos right now</span>
+            </div>
+          ) : (
+            <ul className="list">
+              {repos.map((reponame, id) => (
+                <li
+                  className="list-item"
+                  key={id}
+                  onClick={() => navigate(`${reponame}`)}
+                >
                   <i className="bi bi-folder-fill"></i>
                   <span className="li-text">{reponame}</span>
-              </li>
-            ))}
-          </ul>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       </div>
     </div>
