@@ -38,9 +38,9 @@ export default function VCObject() {
   console.log(objectData.blob);
 
   return (
-    <div className="App">
-      <h1>{objectData.name}</h1>
-      <div className="display-linebreak">
+    <div className="blob-container">
+      <div  className="filename"><i class="bi bi-file-earmark"></i> <span>{objectData.name}</span></div>
+      <div className="inner-text">
         <p>{objectData.blob}</p>
       </div>
     </div>

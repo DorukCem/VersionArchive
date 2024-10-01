@@ -1,0 +1,28 @@
+.upload-container {
+  margin: 10px 0 20px;
+  display: flex;
+  
+}
+
+.message {
+  padding: 6px 10px;
+  margin-bottom: 10px;
+  width: 30%;
+}
+
+.cancel-button{
+  padding: 6px 10px;
+}
+
+.upload-list {
+  list-style-type: none;
+  border: 1px dashed black;
+  width: 100%;
+  padding: 10px 8px 10px;
+  margin: 0;
+}
+
+.bi-file-earmark-arrow-up{
+  font-size: large;
+  margin-right: 4px;
+}

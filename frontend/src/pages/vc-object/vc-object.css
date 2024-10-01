@@ -1,3 +1,19 @@
-.display-linebreak {
+.inner-text {
   white-space: pre-line;
+  display: flex;
+  border: 1px dashed black;
+  border-width: 1px 0px 1px 0px;
+  padding: 10px;
+  text-align: start;
+}
+
+.blob-container{
+  text-align: start;
+  width: 40%;
+  margin: 5% auto 0px auto;
+}
+
+.filename{
+  padding: 16px;
+  font-size: larger;
 }

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import "./newbranch.css"
 
 export default function NewBranch({ currentBranchName, setButton, setSelectedBranch , refreshBranches }) {
   const [newBranchName, setNewBranchName] = useState("");
@@ -11,6 +12,9 @@ export default function NewBranch({ currentBranchName, setButton, setSelectedBra
   };
 
   const createBranch = async () => {
+    if (newBranchName === ""){
+      return
+    }
     try {
       const response = await axios.post(
         `http://127.0.0.1:8000/branch/${username}/${repoName}/new`,
@@ -28,15 +32,16 @@ export default function NewBranch({ currentBranchName, setButton, setSelectedBra
   };
 
   return (
-    <div>
+    <div className="newbranch-container">
       <input
         type="text"
         placeholder="New Branch Name"
         value={newBranchName}
         onChange={(e) => setNewBranchName(e.target.value)}
+        className="newbranch-button"
       />
-      <button onClick={handleCancel}>Cancel</button>
-      <button onClick={createBranch}>Create Branch</button>
+      <button className="newbranch-button" onClick={handleCancel}>Cancel</button>
+      <button className="newbranch-button" onClick={createBranch}>Create Branch</button>
     </div>
   );
 }

@@ -63,7 +63,7 @@ export default function NewRepo({ setButtonPressed, username, refreshRepos }) {
           Cancel
         </button>
       </div>
-      <p>{error}</p>
+      {error !== "" ? <p>{error}</p> : null}
     </div>
   );
 }

@@ -23,6 +23,7 @@
   border-radius: 4px;
   font-size: 1.2em;
   flex-basis: 100%;
+  text-align: center;
 }
 
 
@@ -35,6 +36,8 @@
   color: white;
   cursor: pointer;
   font-size: 1.2em;
+  border-radius: 0;
+  border-color: white;
 }
 
 .but:hover {

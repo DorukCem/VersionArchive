@@ -33,11 +33,13 @@ export default function Navbar() {
     <nav>
       <form onSubmit={handleSearch}>
         <input
+
           type="text"
           name="search"
           placeholder="Search for User"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
+          className="search-input"
         />
       </form>
       <ul id="navbar" className={menuClicked ? "#navbar active" : "navbar"}>

@@ -7,6 +7,11 @@ nav {
   box-shadow: 0 5px 15px rgba(0,0,0, 0.06);
 }
 
+.search-input {
+  padding: 5px;
+  font-size: large;
+}
+
 #navbar{
   display: flex;
   align-items: center;

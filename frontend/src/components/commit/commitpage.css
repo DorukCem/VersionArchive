@@ -6,11 +6,14 @@
 .commit-list {
   padding-left: 0;
   list-style-type: none;
+  border: 1px dashed black;
+  border-width: 1px 0 1px 0;
+  padding: 10px 0 10px 0;
 }
 
 .commit-list-item {
   display: flex;
-  padding: 1em;
+  padding: 8px;
   align-items: center;
 }
 

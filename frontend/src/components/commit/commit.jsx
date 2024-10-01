@@ -40,7 +40,7 @@ export default function Commit({ branchName, commit_id, setRepoNotFound }) {
         <div>
           <div className="commit-title">
             <span>
-              ID: {commit_id} | {commitInfo.commit_message} |{" "}
+              ID: {commitInfo.oid.substring(0, 10)} | {commitInfo.commit_message} |{" "}
               {commitInfo.timestamp.split("T")[0]}
             </span>
           </div>

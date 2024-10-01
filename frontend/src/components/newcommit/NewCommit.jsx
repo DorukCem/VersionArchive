@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-
+import "./newcommit.css"
 
 export default function NewCommit({ setButton , refreshRepos, branchName }) {
   const [files, setFiles] = useState([]);
@@ -103,7 +103,7 @@ export default function NewCommit({ setButton , refreshRepos, branchName }) {
   return (
     <div>
       {(files.length === 0) ? (
-        <div
+        <div className="upload-container"
           onDrop={handleDropFile}
           onDragOver={handleDragOver}
           style={{
@@ -116,10 +116,10 @@ export default function NewCommit({ setButton , refreshRepos, branchName }) {
           
         </div>
       ) : (
-        <div>
-          <ul>
+        <div className="upload-container">
+          <ul className="upload-list">
             {Array.from(files).map((file, index) => (
-              <li key={index}>{file.name}</li>
+              <li key={index}><i class="bi bi-file-earmark-arrow-up"></i> {file.name}</li>
             ))}
           </ul> 
           
@@ -130,8 +130,9 @@ export default function NewCommit({ setButton , refreshRepos, branchName }) {
             value={commitMessage}
             onChange={(e) => setCommitMessage(e.target.value)}
             placeholder="Enter commit message"
+            className="message"
           />
-      <button onClick={handleCancel}>Cancel</button>
+      <button className="cancel-button" onClick={handleCancel}>Cancel</button>
       {(files.length>0 && commitMessage!=="") && <button onClick={handleSubmit}>Submit</button>}
     </div>
   );

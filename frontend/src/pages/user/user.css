@@ -8,12 +8,6 @@
   border-width: 0 0 1px 0;
 }
 
-.page-container {
-  height: 40vh;
-  display: flex;
-  align-items: center;
-}
-
 .header {
   display:  flex;
   border: 1px solid black;
@@ -72,7 +66,7 @@
 }
 
 .create-repo-button:hover {
-  background-color: rgba(0, 128, 0, 0.8)
+  filter: brightness(115%);
 }
 
 .bi-folder-fill{
