@@ -1,14 +1,14 @@
-.commit-container{
+.commit-container {
   display: flex;
   flex-direction: column;
 }
 
-.commit-list{
+.commit-list {
   padding-left: 0;
   list-style-type: none;
 }
 
-.commit-list-item{
+.commit-list-item {
   display: flex;
   padding: 1em;
   align-items: center;
@@ -18,19 +18,22 @@
   color: black;
   font-size: large;
   font-weight: 500;
-  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-family: Georgia, "Times New Roman", Times, serif;
   cursor: pointer;
 }
 
-.commit-li-text:hover{
+.commit-list-item:hover {
+  cursor: pointer;
   text-decoration: underline;
+  background-color: aliceblue;
+  transition: 0.2s;
 }
 
 .bi-file-earmark {
   color: black;
   margin-right: 10px;
   font-size: x-large;
-} 
+}
 
 .commit-title {
   padding-top: 10px;

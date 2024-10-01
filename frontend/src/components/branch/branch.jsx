@@ -120,9 +120,9 @@ export default function Branch({ branchName, setRepoNotFound }) {
           commit_id={selectedCommit || branchData.head_commit_id}
           setRepoNotFound={setRepoNotFound}
         />
-      ) : (
+      ) : branchData !== null ? (
         <span className="placeholder">This branch does not have a commit</span>
-      )}
+      ) : null}
 
       {!buttonPressed && (
         <div>

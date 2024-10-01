@@ -59,48 +59,50 @@ export default function Repository() {
   };
 
   return branches.length > 0 ? (
-    <div className="repo-container">
-      <div className="header">
-        <div className="repo-title">
-          <i className="bi bi-folder-fill"></i>
-          <span className="repo-name">{repoName}</span>
+    <div className="page-container">
+      <div className="repo-container">
+        <div className="header">
+          <div className="repo-title">
+            <i className="bi bi-folder-fill"></i>
+            <span className="repo-name">{repoName}</span>
+          </div>
+          <div className="edit-branch">
+            <select
+              className="select-branch"
+              value={selectedBranch}
+              onChange={handleBranchChange}
+            >
+              {branches.map((branch) => (
+                <option key={branch} value={branch}>
+                  {branch}
+                </option>
+              ))}
+            </select>
+            <Protected>
+              <button className="create-branch" onClick={handleCreateBranch}>
+                Create new Branch
+              </button>
+            </Protected>
+          </div>
         </div>
-        <div className="edit-branch">
-          <select
-            className="select-branch"
-            value={selectedBranch}
-            onChange={handleBranchChange}
-          >
-            {branches.map((branch) => (
-              <option key={branch} value={branch}>
-                {branch}
-              </option>
-            ))}
-          </select>
+        {!createBranchButton ? (
+          selectedBranch && (
+            <Branch
+              branchName={selectedBranch}
+              setRepoNotFound={setRepoNotFound}
+            />
+          )
+        ) : (
           <Protected>
-            <button className="create-branch" onClick={handleCreateBranch}>
-              Create new Branch
-            </button>
+            <NewBranch
+              currentBranchName={selectedBranch}
+              setButton={setCreateBranchButton}
+              refreshBranches={refreshBranches}
+              setSelectedBranch={setSelectedBranch}
+            />
           </Protected>
-        </div>
+        )}
       </div>
-      {!createBranchButton ? (
-        selectedBranch && (
-          <Branch
-            branchName={selectedBranch}
-            setRepoNotFound={setRepoNotFound}
-          />
-        )
-      ) : (
-        <Protected>
-          <NewBranch
-            currentBranchName={selectedBranch}
-            setButton={setCreateBranchButton}
-            refreshBranches={refreshBranches}
-            setSelectedBranch={setSelectedBranch}
-          />
-        </Protected>
-      )}
     </div>
   ) : (
     <div>Loading...</div>

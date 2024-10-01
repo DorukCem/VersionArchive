@@ -1,15 +1,12 @@
 import { useState, useEffect } from "react";
-import { useParams, NavLink } from "react-router-dom";
+import { useParams, NavLink, useNavigate } from "react-router-dom";
 import "./commitpage.css";
 
 export default function Commit({ branchName, commit_id, setRepoNotFound }) {
   const { username, repoName } = useParams();
   const [objects, setObjects] = useState([]);
   const [commitInfo, setCommitInfo] = useState(null);
-  const navLinkStyle = {
-    textDecoration: "none",
-    color: "black",
-  };
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function fetchCommitContents() {
@@ -43,25 +40,28 @@ export default function Commit({ branchName, commit_id, setRepoNotFound }) {
         <div>
           <div className="commit-title">
             <span>
-              ID: {commit_id} | {commitInfo.commit_message} | {commitInfo.timestamp.split("T")[0]}
+              ID: {commit_id} | {commitInfo.commit_message} |{" "}
+              {commitInfo.timestamp.split("T")[0]}
             </span>
           </div>
           <ul className="commit-list">
             {objects.map((obj) => (
-              <li className="commit-list-item" key={obj.id}>
+              <li
+                className="commit-list-item"
+                key={obj.id}
+                onClick={() => navigate(`${`object/${obj.oid}`}`)}
+              >
                 <i class="bi bi-file-earmark"></i>
                 <span className="commit-li-text">
-                  <NavLink style={navLinkStyle} to={`object/${obj.oid}`}>
-                    {obj.name}
-                  </NavLink>
+                  {obj.name}
                 </span>
               </li>
             ))}
           </ul>
         </div>
-      ) : (
+      ) : commitInfo !== null ? (
         <h1>This repo is empty, start by commiting a file</h1>
-      )}
+      ) : null}
     </div>
   );
 }

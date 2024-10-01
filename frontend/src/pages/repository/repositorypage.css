@@ -1,3 +1,9 @@
+.page-container {
+  height: 40vh;
+  display: flex;
+  align-items: center;
+}
+
 .repo-container {
   width: 80%;
   margin: 16px auto;
@@ -12,22 +18,25 @@
   text-align: center;
   flex: 1 0;
   padding: 5px 10px;
-  font-size: large;
+  font-size: medium;
 }
 
 .edit-branch {
   display: flex;
+  margin: 1px 1px;
 }
 
 .header {
   display: flex;
   justify-content: space-between;
+  padding-bottom: 24px;
 }
 
 .repo-title{
   display: flex;
   align-items: center;
   font-size: large;
+  padding-left: 16px;
 }
 
 .bi-folder-fill{

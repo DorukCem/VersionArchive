@@ -69,11 +69,11 @@ export default function UserProfile() {
     <div className="page-container">
       <div className="user-container">
         <div className="header">
-          <h1 className="title">
+          <span className="title">
             {auth?.username
               ? "My Repositories"
               : `User ${username}'s Repositories`}
-          </h1>
+          </span>
           <div className="button-container">
             <Protected>
               <button className="create-repo-button" onClick={handleCreateRepo}>
