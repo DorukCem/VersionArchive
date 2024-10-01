@@ -5,6 +5,7 @@ import "./commitpage.css";
 export default function Commit({ branchName, commit_id, setRepoNotFound }) {
   const { username, repoName } = useParams();
   const [objects, setObjects] = useState([]);
+  const [commitInfo, setCommitInfo] = useState(null);
   const navLinkStyle = {
     textDecoration: "none",
     color: "black",
@@ -24,7 +25,8 @@ export default function Commit({ branchName, commit_id, setRepoNotFound }) {
           }
         } else {
           const data = await response.json();
-          setObjects(data);
+          setObjects(data.objects);
+          setCommitInfo(data.commit);
           setRepoNotFound(false);
         }
       } catch (error) {
@@ -40,7 +42,9 @@ export default function Commit({ branchName, commit_id, setRepoNotFound }) {
       {objects.length > 0 ? (
         <div>
           <div className="commit-title">
-            <span>Commit ID: {commit_id}</span>
+            <span>
+              ID: {commit_id} | {commitInfo.commit_message} | {commitInfo.timestamp.split("T")[0]}
+            </span>
           </div>
           <ul className="commit-list">
             {objects.map((obj) => (
