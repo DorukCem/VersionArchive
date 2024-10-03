@@ -101,7 +101,7 @@ export default function NewCommit({ setButton , refreshRepos, branchName }) {
   }, [files]);
 
   return (
-    <div>
+    <div style={{textAlign: "start"}}>
       {(files.length === 0) ? (
         <div className="upload-container"
           onDrop={handleDropFile}
@@ -133,7 +133,7 @@ export default function NewCommit({ setButton , refreshRepos, branchName }) {
             className="message"
           />
       <button className="cancel-button" onClick={handleCancel}>Cancel</button>
-      {(files.length>0 && commitMessage!=="") && <button onClick={handleSubmit}>Submit</button>}
+      {(files.length>0 && commitMessage!=="") && <button className="cancel-button" onClick={handleSubmit}>Submit</button>}
     </div>
   );
 }
