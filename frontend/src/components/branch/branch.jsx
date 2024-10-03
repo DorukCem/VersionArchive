@@ -30,6 +30,7 @@ export default function Branch({ branchName, setRepoNotFound }) {
           const data = await response.json();
           setBranchData(data);
           setRepoNotFound(false);
+          setSelectedCommit(data.head_commit_id);
         }
       } catch (error) {
         console.error(error);
@@ -150,27 +151,28 @@ export default function Branch({ branchName, setRepoNotFound }) {
           </div>
 
           {showCommits && (
-            <div>
+            <div className="showcommit-container">
               <h2>Commits in {branchName}:</h2>
-              <ul>
+              <ul className="showcommit-list">
                 {commits.map((commit, index) => (
                   <li
                     key={index}
                     onClick={() => handleCommitClick(commit.id)}
                     className={
-                      commit.id === selectedCommit ? "selected-commit" : ""
+                      commit.id === selectedCommit
+                        ? "selected-commit showcommit-item"
+                        : "showcommit-item"
                     }
                     style={{ cursor: "pointer" }}
                   >
-                    {`Message: ${
-                      commit.commit_message
-                    }  |  Time: ${formatDateTime(commit.timestamp)}`}
+                    <span>{`ID: ${commit.oid.substring(0, 8)}`}</span>
+                    <span>{`${commit.commit_message}`}</span>
+                    <span>{`${formatDateTime(commit.timestamp)}`}</span>
 
                     {commit.id === selectedCommit && !is_head_commit() && (
                       <Protected>
-                        <button
+                        <button className="reset-button"
                           onClick={handleReset}
-                          style={{ marginLeft: "1rem" }}
                         >
                           Reset branch to this commit
                         </button>

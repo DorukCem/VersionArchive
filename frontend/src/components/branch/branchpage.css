@@ -22,3 +22,28 @@
   padding-top: 20px;
   padding-bottom: 20px;
 }
+
+.showcommit-list {
+  list-style: none;
+  text-align: start;
+  padding: 0;
+}
+
+.showcommit-item {
+  display: grid;
+  grid-template-columns: 1fr 4fr 1fr 0.75fr; 
+  gap: 10px; 
+  cursor: pointer;
+  padding: 10px 0;
+}
+
+.selected-commit {
+  color: blue;
+}
+
+.reset-button {
+  font-size: large;
+  background-color: orange;
+  color: white;
+  font-weight: bold;
+}
