@@ -80,7 +80,7 @@ export default function Repository() {
             </select>
             <Protected>
               <button className="create-branch" onClick={handleCreateBranch}>
-                Create new Branch
+                New Branch
               </button>
             </Protected>
           </div>
