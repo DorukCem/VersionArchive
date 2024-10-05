@@ -163,24 +163,39 @@ export default function Branch({ branchName, setRepoNotFound }) {
                   <li
                     key={index}
                     onClick={() => handleCommitClick(commit.id)}
-                    className={
-                      commit.id === selectedCommit
-                        ? "selected-commit showcommit-item"
-                        : "showcommit-item"
-                    }
                     style={{ cursor: "pointer" }}
+                    className="showcommit__li"
                   >
-                    <span>{`ID: ${commit.oid.substring(0, 8)}`}</span>
-                    <span>{`${commit.commit_message}`}</span>
-                    <span>{`${formatDateTime(commit.timestamp)}`}</span>
-
-                    {commit.id === selectedCommit && !is_head_commit() && (
-                      <Protected>
-                        <button className="reset-button" onClick={handleReset}>
-                          Reset branch to this commit
-                        </button>
-                      </Protected>
-                    )}
+                    <div
+                      className={
+                        commit.id === selectedCommit
+                          ? "selected-commit showcommit-item"
+                          : "showcommit-item"
+                      }
+                    >
+                      <div className="commit__header">
+                        <span>{`ID: ${commit.oid.substring(0, 8)}`}</span>
+                        <span>{`${formatDateTime(commit.timestamp)}`}</span>
+                      </div>
+                      <div className="commit__footer">
+                        <span className="commitmessage">{`${commit.commit_message}`}</span>
+                        <div style={{display: "flex", alignItems: "end", justifyContent: "end"}}>
+                          <div className="reset__button__container">
+                            {commit.id === selectedCommit &&
+                              !is_head_commit() && (
+                                <Protected>
+                                  <button
+                                    className="reset-button"
+                                    onClick={handleReset}
+                                  >
+                                    Reset branch
+                                  </button>
+                                </Protected>
+                              )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </li>
                 ))}
               </ul>

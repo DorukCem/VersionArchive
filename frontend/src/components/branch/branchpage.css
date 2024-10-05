@@ -23,29 +23,34 @@
   padding-bottom: 20px;
 }
 
+.showcommit-container{
+  padding: 20px 10px;
+  text-align: center;
+}
+
 .showcommit-list {
-  list-style: none;
   text-align: start;
+  list-style: none;
   padding: 0;
 }
 
+
 .showcommit-item {
-  display: grid;
-  grid-template-columns: 1fr 4fr 2fr 0.75fr; 
   gap: 10px; 
   cursor: pointer;
-  padding: 10px 0;
+  padding: 10px;
 }
 
+
 .selected-commit {
-  color: blue;
+  background-color: aquamarine;
+  border: 1px dashed;
 }
 
 .reset-button {
-  font-size: small;
-  background-color: orange;
-  color: white;
+  font-size: medium;
   font-weight: bold;
+
 }
 
 .showcommit__title{
@@ -54,4 +59,37 @@
 
 .showcommit__title-branchname {
   color: purple;
+}
+
+.commit__header{
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 10px;
+}
+
+.commit__footer{
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  min-height: 69px;
+}
+
+.showcommit__li{
+  border: 1px solid black;
+  border-width: 0 0 1px 0;
+  padding: 10px 0;
+}
+
+
+.showcommit__li:last-child{
+  border: none
+}
+
+.commitmessage{
+  font-style: italic;
+}
+
+.reset__button__container{
+  display: flex;
+  flex-direction: row-reverse;
+  max-height: 25px;
 }
