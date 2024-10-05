@@ -31,7 +31,7 @@
 
 .showcommit-item {
   display: grid;
-  grid-template-columns: 1fr 4fr 1fr 0.75fr; 
+  grid-template-columns: 1fr 4fr 2fr 0.75fr; 
   gap: 10px; 
   cursor: pointer;
   padding: 10px 0;
@@ -42,8 +42,16 @@
 }
 
 .reset-button {
-  font-size: large;
+  font-size: small;
   background-color: orange;
   color: white;
   font-weight: bold;
+}
+
+.showcommit__title{
+  font-weight: 600;
+}
+
+.showcommit__title-branchname {
+  color: purple;
 }

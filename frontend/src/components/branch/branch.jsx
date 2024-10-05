@@ -152,7 +152,12 @@ export default function Branch({ branchName, setRepoNotFound }) {
 
           {showCommits && (
             <div className="showcommit-container">
-              <h2>Commits in {branchName}:</h2>
+              <span className="showcommit__title">
+                Commits in{" "}
+                <span className="showcommit__title-branchname">
+                  {branchName}
+                </span>
+              </span>
               <ul className="showcommit-list">
                 {commits.map((commit, index) => (
                   <li
@@ -171,9 +176,7 @@ export default function Branch({ branchName, setRepoNotFound }) {
 
                     {commit.id === selectedCommit && !is_head_commit() && (
                       <Protected>
-                        <button className="reset-button"
-                          onClick={handleReset}
-                        >
+                        <button className="reset-button" onClick={handleReset}>
                           Reset branch to this commit
                         </button>
                       </Protected>
