@@ -10,6 +10,8 @@ nav {
 .search-input {
   padding: 5px;
   font-size: large;
+  text-align: center;
+  border: 1px solid black;
 }
 
 #navbar{

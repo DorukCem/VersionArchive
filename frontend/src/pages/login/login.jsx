@@ -49,7 +49,7 @@ function Login() {
     return (
       <div className="login-container">
         <div className="login-form">
-          <h1>User {auth.username} logged in</h1>
+          <h2>User {auth.username} logged in</h2>
           <button onClick={onLogout}>Logout</button>
         </div>
       </div>

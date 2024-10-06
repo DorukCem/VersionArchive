@@ -43,7 +43,7 @@
 
 
 .selected-commit {
-  background-color: aquamarine;
+  background-color: lightgray;
   border: 1px dashed;
 }
 

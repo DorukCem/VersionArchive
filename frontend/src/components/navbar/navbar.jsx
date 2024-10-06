@@ -33,7 +33,6 @@ export default function Navbar() {
     <nav>
       <form onSubmit={handleSearch}>
         <input
-
           type="text"
           name="search"
           placeholder="Search for User"
@@ -46,11 +45,6 @@ export default function Navbar() {
         <li>
           <NavLink to={"/"} style={navLinkStyle}>
             Home
-          </NavLink>
-        </li>
-        <li>
-          <NavLink to={"/tutorial"} style={navLinkStyle}>
-            Tutorial
           </NavLink>
         </li>
         <li>
