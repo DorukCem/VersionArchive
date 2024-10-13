@@ -2,7 +2,6 @@ import "./App.css";
 import { Routes, Route } from "react-router-dom";
 import Navbar from "./components/navbar/navbar";
 import Home from "./pages/home";
-import Tutorial from "./pages/tutorial";
 import UserProfile from "./pages/user/userpage";
 import Repository from "./pages/repository/repository";
 import VCObject from "./pages/vc-object";
@@ -16,7 +15,6 @@ function App() {
         <Navbar />
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/tutorial" element={<Tutorial />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/:username" element={<UserProfile />} />
